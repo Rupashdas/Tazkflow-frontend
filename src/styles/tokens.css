@@ -1,0 +1,179 @@
+/*
+ * Design tokens. Components never write a colour or radius directly — they use
+ * the Tailwind utilities generated from these variables, so light/dark and the
+ * five accents are a single attribute change on <html>.
+ *
+ * Values come from docs/superpowers/specs/2026-09-28-frontend-foundation-design.md §3.
+ */
+@import 'tailwindcss';
+
+@theme inline {
+  --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-divider: var(--divider);
+  --color-row-hover: var(--row-hover);
+
+  --color-text: var(--text);
+  --color-secondary: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-icon-muted: var(--icon-muted);
+
+  --color-accent: var(--accent);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-text: var(--accent-soft-text);
+  --color-accent-text: var(--accent-text);
+  --color-accent-rail: var(--accent-rail);
+
+  --color-success-soft: var(--success-soft);
+  --color-success-text: var(--success-text);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-text: var(--warning-text);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-text: var(--danger-text);
+
+  --radius-card: 10px;
+  --radius-control: 8px;
+  --radius-chip: 6px;
+  --radius-nav: 7px;
+
+  --shadow-card: 0 1px 3px rgb(16 24 40 / 0.05);
+  --shadow-popover: 0 10px 28px rgb(16 24 40 / 0.1);
+}
+
+/* ---------- Light (default) ---------- */
+:root {
+  --page: #f6f7f9;
+  --surface: #ffffff;
+  --surface-subtle: #f8f9fb;
+  --border: #e9ebef;
+  --border-strong: #e3e6ea;
+  --divider: #f4f5f7;
+  --row-hover: #fbfcfe;
+
+  --text: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9aa3af;
+  --icon-muted: #c3c9d2;
+
+  --success-soft: #ecfdf5;
+  --success-text: #047857;
+  --warning-soft: #fdf6e8;
+  --warning-text: #92400e;
+  --danger: #b42318;
+  --danger-soft: #fef3f2;
+  --danger-text: #b42318;
+}
+
+/* ---------- Dark ---------- */
+/* Surfaces are lifted off black and text is not pure white: full contrast is
+ * what made the first attempt uncomfortable to look at. */
+:root[data-theme='dark'] {
+  --page: #14161a;
+  --surface: #1b1e24;
+  --surface-subtle: #21252c;
+  --border: #262a31;
+  --border-strong: #2b3039;
+  --divider: #23272e;
+  --row-hover: #1f232a;
+
+  --text: #dfe3e9;
+  --text-secondary: #aeb5c0;
+  --text-muted: #949ba6;
+  --icon-muted: #6a7280;
+
+  --success-soft: rgb(90 175 145 / 0.13);
+  --success-text: #6fbf9b;
+  --warning-soft: rgb(196 152 86 / 0.13);
+  --warning-text: #cda772;
+  --danger: #a8514b;
+  --danger-soft: rgb(200 120 115 / 0.13);
+  --danger-text: #e39b95;
+}
+
+/* ---------- Accents, light ---------- */
+/* --accent-contrast is white everywhere: white text on a mid-tone fill reads
+ * calmly, while dark text on a bright fill glows. */
+:root {
+  --accent-contrast: #ffffff;
+}
+
+:root[data-accent='blue'], :root:not([data-accent]) {
+  --accent: #2563eb;
+  --accent-soft: #eff4ff;
+  --accent-soft-text: #1d4ed8;
+  --accent-text: #2563eb;
+  --accent-rail: #2563eb;
+}
+:root[data-accent='violet'] {
+  --accent: #6250b8;
+  --accent-soft: #f2f1fa;
+  --accent-soft-text: #54459f;
+  --accent-text: #6250b8;
+  --accent-rail: #6250b8;
+}
+:root[data-accent='emerald'] {
+  --accent: #1f7a5f;
+  --accent-soft: #edf7f2;
+  --accent-soft-text: #186450;
+  --accent-text: #1f7a5f;
+  --accent-rail: #1f7a5f;
+}
+:root[data-accent='amber'] {
+  --accent: #b45309;
+  --accent-soft: #fdf6e8;
+  --accent-soft-text: #92400e;
+  --accent-text: #b45309;
+  --accent-rail: #b45309;
+}
+:root[data-accent='rose'] {
+  --accent: #a8475f;
+  --accent-soft: #fbf1f3;
+  --accent-soft-text: #8e3a4f;
+  --accent-text: #a8475f;
+  --accent-rail: #a8475f;
+}
+
+/* ---------- Accents, dark ---------- */
+:root[data-theme='dark'][data-accent='blue'],
+:root[data-theme='dark']:not([data-accent]) {
+  --accent: #3f6ac9;
+  --accent-soft: rgb(99 140 220 / 0.14);
+  --accent-soft-text: #a6c0e8;
+  --accent-text: #8fb1e2;
+  --accent-rail: #5b86d6;
+}
+:root[data-theme='dark'][data-accent='violet'] {
+  --accent: #6558bb;
+  --accent-soft: rgb(139 126 215 / 0.14);
+  --accent-soft-text: #bdb2e6;
+  --accent-text: #ab9fdd;
+  --accent-rail: #8175c9;
+}
+:root[data-theme='dark'][data-accent='emerald'] {
+  --accent: #2f7c63;
+  --accent-soft: rgb(90 175 145 / 0.13);
+  --accent-soft-text: #9ccbb8;
+  --accent-text: #84bda7;
+  --accent-rail: #479a7c;
+}
+:root[data-theme='dark'][data-accent='amber'] {
+  --accent: #96682c;
+  --accent-soft: rgb(196 152 86 / 0.13);
+  --accent-soft-text: #d8b483;
+  --accent-text: #cda772;
+  --accent-rail: #b98a45;
+}
+:root[data-theme='dark'][data-accent='rose'] {
+  --accent: #a84f68;
+  --accent-soft: rgb(205 130 155 / 0.13);
+  --accent-soft-text: #e0abbb;
+  --accent-text: #d698a9;
+  --accent-rail: #c4738b;
+}
