@@ -1,6 +1,6 @@
-# Tazflow — Frontend
+# Tazkflow — Frontend
 
-Vue 3 + TypeScript SPA for Tazflow. The API is a separate Laravel app in `../tazflow-backend`.
+Vue 3 + TypeScript SPA for Tazkflow. The API is a separate Laravel app in `../tazkflow-backend`.
 
 ## Setup
 
@@ -13,7 +13,7 @@ npm run dev              # http://localhost:5173
 The API must be running too:
 
 ```bash
-cd ../tazflow-backend
+cd ../tazkflow-backend
 php artisan serve        # http://localhost:8000
 php artisan queue:work   # verification and invitation emails
 ```
