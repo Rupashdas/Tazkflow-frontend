@@ -8,8 +8,8 @@ export type AccentName = 'blue' | 'violet' | 'emerald' | 'amber' | 'rose'
 
 export const ACCENTS: AccentName[] = ['blue', 'violet', 'emerald', 'amber', 'rose']
 
-const APPEARANCE_KEY = 'tazko.appearance'
-const ACCENT_KEY = 'tazko.accent'
+const APPEARANCE_KEY = 'tazflow.appearance'
+const ACCENT_KEY = 'tazflow.accent'
 
 const prefersDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches
 
