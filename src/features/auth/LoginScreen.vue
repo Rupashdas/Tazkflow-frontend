@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import Button from '@/ui/Button.vue'
 import TextField from '@/ui/TextField.vue'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { authCopy } from './copy'
@@ -91,18 +92,7 @@ async function submit() {
 						{{ copy.remember }}
 					</label>
 
-					<button
-						type="submit"
-						:disabled="submitting"
-						class="inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-control bg-accent px-5 text-[15px] font-semibold text-accent-contrast transition-colors hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
-					>
-						<span
-							v-if="submitting"
-							class="size-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-							aria-hidden="true"
-						/>
-						{{ copy.submit }}
-					</button>
+					<Button type="submit" block :loading="submitting">{{ copy.submit }}</Button>
 				</form>
 			</div>
 		</div>

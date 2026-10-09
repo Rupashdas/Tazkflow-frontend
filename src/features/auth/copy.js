@@ -12,4 +12,9 @@ export const authCopy = {
 		submit: 'Sign in',
 		failed: 'We could not sign you in. Please check your details and try again.',
 	},
+	session: {
+		title: 'You are signed in',
+		subtitle: 'The workspace screens arrive in the next tasks.',
+		signOut: 'Sign out',
+	},
 }
