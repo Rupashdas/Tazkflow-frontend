@@ -3,10 +3,7 @@
  * Everything visual follows from those, because the tokens are defined per
  * attribute in tokens.css.
  */
-export type Appearance = "light" | "dark" | "os";
-export type AccentName = "blue" | "violet" | "emerald" | "amber" | "rose";
-
-export const ACCENTS: AccentName[] = [
+export const ACCENTS = [
   "blue",
   "violet",
   "emerald",
@@ -19,12 +16,13 @@ const ACCENT_KEY = "tazkflow.accent";
 
 const prefersDark = () => window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-function resolve(appearance: Appearance): "light" | "dark" {
+function resolve(appearance) {
 	if (appearance === "os") return prefersDark() ? "dark" : "light";
 	return appearance;
 }
 
-export function applyAppearance(appearance: Appearance): void {
+/** appearance is "light", "dark" or "os". */
+export function applyAppearance(appearance) {
 	document.documentElement.dataset.theme = resolve(appearance);
 	// Remembered so the boot script in index.html can avoid a flash of the
 	// wrong theme on the next page load.
@@ -35,7 +33,8 @@ export function applyAppearance(appearance: Appearance): void {
 	}
 }
 
-export function applyAccent(accent: AccentName): void {
+/** accent is one of ACCENTS. */
+export function applyAccent(accent) {
 	document.documentElement.dataset.accent = accent;
 	try {
 		localStorage.setItem(ACCENT_KEY, accent);
@@ -44,7 +43,7 @@ export function applyAccent(accent: AccentName): void {
 	}
 }
 
-export function storedAppearance(): Appearance {
+export function storedAppearance() {
 	try {
 		const value = localStorage.getItem(APPEARANCE_KEY);
 		if (value === "light" || value === "dark" || value === "os") return value;
@@ -55,7 +54,7 @@ export function storedAppearance(): Appearance {
 }
 
 /** Follows the operating system while the preference is 'os'. */
-export function startThemeSync(): void {
+export function startThemeSync() {
 	window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
 		if (storedAppearance() === "os") applyAppearance("os");
 	});

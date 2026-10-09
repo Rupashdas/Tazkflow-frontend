@@ -1,6 +1,6 @@
 # Tazkflow — Frontend
 
-Vue 3 + TypeScript SPA for Tazkflow. The API is a separate Laravel app in `../tazkflow-backend`.
+Vue 3 SPA (plain JavaScript) for Tazkflow. The API is a separate Laravel app in `../tazkflow-backend`.
 
 ## Setup
 
