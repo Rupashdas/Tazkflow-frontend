@@ -66,13 +66,18 @@ async function submit() {
 				:error="errors.email"
 			/>
 
-			<TextField
-				v-model="password"
-				:label="copy.password"
-				type="password"
-				autocomplete="current-password"
-				:error="errors.password"
-			/>
+			<div>
+				<TextField
+					v-model="password"
+					:label="copy.password"
+					type="password"
+					autocomplete="current-password"
+					:error="errors.password"
+				/>
+				<RouterLink to="/forgot-password" class="mt-2 inline-block text-[14px] font-medium text-accent-text">
+					{{ copy.forgot }}
+				</RouterLink>
+			</div>
 
 			<label class="flex items-center gap-2.5 text-[15px] text-secondary">
 				<input v-model="remember" type="checkbox" class="size-5 rounded-[6px] accent-[var(--accent)]" />
