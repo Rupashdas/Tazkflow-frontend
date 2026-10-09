@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { api } from '@/lib/api'
+import { api, ensureCsrfCookie } from '@/lib/api'
 import { ACCENTS, applyAccent, applyAppearance } from '@/lib/theme'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -33,7 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
 
 	async function login(email, password, remember) {
 		// Laravel refuses a POST without the XSRF cookie, and a new visitor has none.
-		await api.get('/sanctum/csrf-cookie')
+		await ensureCsrfCookie()
 		const { data } = await api.post('/api/login', { email, password, remember })
 		setUser(data.data)
 	}
@@ -44,5 +44,5 @@ export const useAuthStore = defineStore('auth', () => {
 		user.value = null
 	}
 
-	return { user, checked, isLoggedIn, fetchUser, login, logout }
+	return { user, checked, isLoggedIn, setUser, fetchUser, login, logout }
 })

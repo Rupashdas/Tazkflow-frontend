@@ -6,6 +6,7 @@ defineProps({
 	label: { type: String, required: true },
 	type: { type: String, default: 'text' },
 	error: String,
+	hint: String,
 	autocomplete: String,
 })
 
@@ -24,7 +25,7 @@ const id = useId()
 			:value="modelValue"
 			:autocomplete="autocomplete"
 			:aria-invalid="error ? 'true' : undefined"
-			:aria-describedby="error ? `${id}-help` : undefined"
+			:aria-describedby="error || hint ? `${id}-help` : undefined"
 			class="h-[50px] w-full rounded-control border bg-surface px-4 text-[16px] text-text placeholder:text-muted"
 			:class="error ? 'border-danger' : 'border-border-strong'"
 			@input="$emit('update:modelValue', $event.target.value)"
@@ -33,5 +34,6 @@ const id = useId()
 		<!-- Never colour alone: an invalid field also gets a red border and
 		     aria-invalid, so it reads for everyone. -->
 		<p v-if="error" :id="`${id}-help`" class="mt-2 text-[14px] text-danger-text">{{ error }}</p>
+		<p v-else-if="hint" :id="`${id}-help`" class="mt-2 text-[14px] text-muted">{{ hint }}</p>
 	</div>
 </template>

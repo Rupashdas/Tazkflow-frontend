@@ -15,3 +15,29 @@ export const api = axios.create({
 	withXSRFToken: true,
 	headers: { Accept: 'application/json' },
 })
+
+let csrfReady = false
+
+/** Laravel refuses a POST without the XSRF cookie. Fetched once per page load. */
+export async function ensureCsrfCookie() {
+	if (csrfReady) return
+	await api.get('/sanctum/csrf-cookie')
+	csrfReady = true
+}
+
+/** 422 validation errors as one message per field, ready for the form. */
+export function fieldErrors(error) {
+	const data = error?.response?.data
+	const out = {}
+
+	for (const [field, messages] of Object.entries(data?.errors ?? {})) {
+		if (messages?.[0]) out[field] = messages[0]
+	}
+
+	return out
+}
+
+/** The server's own message (403, 429 …), or the screen's fallback. */
+export function errorMessage(error, fallback) {
+	return error?.response?.data?.message ?? fallback
+}
