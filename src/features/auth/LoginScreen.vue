@@ -50,11 +50,9 @@ async function submit() {
 	<div class="flex min-h-screen items-center justify-center bg-page px-6 py-12">
 		<div class="w-full max-w-[460px]">
 			<div class="mb-8 flex items-center gap-3">
-				<div
-					class="flex size-10 items-center justify-center rounded-control bg-text text-[18px] font-bold text-page"
-				>
-					T
-				</div>
+				<svg class="size-9" viewBox="0 7.5 92 92" aria-hidden="true">
+					<path fill="#2563EB" d="M 15 18 H 64 C 67.3 18 70.4 19.3 72.7 21.6 L 88 36.9 L 75.8 49.1 C 73.5 51.4 69.8 51.4 67.5 49.1 L 63.9 45.5 C 61.2 42.8 57.8 41 53 41 H 46 V 76 C 46 83.2 40.2 89 33 89 C 25.8 89 20 83.2 20 76 V 41 H 15 C 8.6 41 4 36.4 4 30 C 4 23.6 8.6 18 15 18 Z" />
+				</svg>
 				<span class="text-[20px] font-bold tracking-[-0.01em] text-text">Tazkflow</span>
 			</div>
 
