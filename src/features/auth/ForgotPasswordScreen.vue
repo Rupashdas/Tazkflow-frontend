@@ -21,10 +21,10 @@ async function submit() {
 
 	try {
 		await ensureCsrfCookie()
-		// The API answers the same way whether or not the address has an account,
-		// so we show its message as it is and never say "no such user".
-		const { data } = await api.post('/api/forgot-password', { email: email.value })
-		notice.value = data.message
+		// The API answers 200 whether or not the address has an account, so the
+		// same neutral notice shows either way.
+		await api.post('/api/forgot-password', { email: email.value })
+		notice.value = copy.sent
 	} catch (error) {
 		errors.value = fieldErrors(error)
 		if (Object.keys(errors.value).length === 0) {

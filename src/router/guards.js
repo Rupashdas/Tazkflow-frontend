@@ -1,4 +1,5 @@
 import { useAuthStore } from '@/stores/useAuthStore'
+import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
 
 /**
  * Runs before every navigation.
@@ -18,6 +19,12 @@ export const authGuard = async (to) => {
 
 	if (to.meta.guestOnly && auth.isLoggedIn) {
 		return { path: '/' }
+	}
+
+	// Routes under /:workspace carry the slug that every API call needs.
+	const slug = to.params.workspace
+	if (typeof slug === 'string' && slug.length > 0) {
+		useWorkspaceStore().setSlug(slug)
 	}
 
 	return true

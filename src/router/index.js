@@ -41,9 +41,21 @@ export const router = createRouter({
 		},
 		{
 			path: '/',
-			name: 'session',
-			component: () => import('@/features/auth/SessionScreen.vue'),
+			name: 'landing',
+			component: () => import('@/features/workspaces/LandingScreen.vue'),
 			meta: { requiresAuth: true },
+		},
+		{
+			path: '/:workspace',
+			component: () => import('@/layouts/AppLayout.vue'),
+			meta: { requiresAuth: true },
+			children: [
+				{
+					path: '',
+					name: 'home',
+					component: () => import('@/features/home/HomeScreen.vue'),
+				},
+			],
 		},
 	],
 })

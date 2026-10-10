@@ -34,6 +34,8 @@ export const authCopy = {
 		email: 'Email',
 		submit: 'Send reset link',
 		back: 'Back to sign in',
+		// Neutral on purpose: it must not tell whether the address has an account.
+		sent: 'If that email has an account, a reset link is on its way.',
 		failed: 'We could not send the link. Please try again.',
 	},
 	reset: {
@@ -64,10 +66,5 @@ export const authCopy = {
 		title: 'Email confirmed',
 		subtitle: 'Thanks — your email address is confirmed.',
 		continue: 'Continue',
-	},
-	session: {
-		title: 'You are signed in',
-		subtitle: 'The workspace screens arrive in the next tasks.',
-		signOut: 'Sign out',
 	},
 }

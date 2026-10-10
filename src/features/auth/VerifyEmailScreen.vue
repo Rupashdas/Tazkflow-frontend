@@ -24,8 +24,14 @@ async function resend() {
 	notice.value = ''
 
 	try {
-		await api.post('/api/email/verification-notification')
-		notice.value = copy.sent
+		const { status } = await api.post('/api/email/verification-notification')
+		// 202 means a link went out. 200 means the address was already
+		// confirmed (say, in another tab) and nothing was sent.
+		if (status === 202) {
+			notice.value = copy.sent
+		} else {
+			await recheck()
+		}
 	} catch (error) {
 		notice.value = errorMessage(error, copy.sendFailed)
 	} finally {

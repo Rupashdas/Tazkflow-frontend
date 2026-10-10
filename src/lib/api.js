@@ -16,6 +16,18 @@ export const api = axios.create({
 	headers: { Accept: 'application/json' },
 })
 
+let workspaceSlug = null
+
+/** The workspace store keeps this in step; every request inside a workspace needs it. */
+export function setWorkspaceSlug(slug) {
+	workspaceSlug = slug
+}
+
+api.interceptors.request.use((config) => {
+	if (workspaceSlug) config.headers['X-Workspace'] = workspaceSlug
+	return config
+})
+
 let csrfReady = false
 
 /** Laravel refuses a POST without the XSRF cookie. Fetched once per page load. */
