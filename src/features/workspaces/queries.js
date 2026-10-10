@@ -3,6 +3,16 @@ import { useQuery } from '@tanstack/vue-query'
 import { api } from '@/lib/api'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
 
+export async function fetchWorkspaces() {
+	const { data } = await api.get('/api/workspaces')
+	return data.data
+}
+
+/** Every workspace the signed-in person can enter. Feeds the switcher. */
+export function useWorkspaces() {
+	return useQuery({ queryKey: ['workspaces'], queryFn: fetchWorkspaces })
+}
+
 /**
  * The workspace named by the URL.
  *

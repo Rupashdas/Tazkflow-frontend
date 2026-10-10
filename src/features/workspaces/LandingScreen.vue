@@ -6,8 +6,8 @@
  */
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { api } from '@/lib/api'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
+import { fetchWorkspaces } from './queries'
 import { workspaceCopy } from './copy'
 
 const copy = workspaceCopy.landing
@@ -19,8 +19,7 @@ async function open() {
 	state.value = 'loading'
 
 	try {
-		const { data } = await api.get('/api/workspaces')
-		const list = data.data
+		const list = await fetchWorkspaces()
 
 		if (list.length === 0) {
 			state.value = 'none'

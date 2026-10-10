@@ -11,6 +11,7 @@ import { Home, MoreHorizontal } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
 import { workspaceCopy } from '@/features/workspaces/copy'
+import WorkspaceSwitcher from '@/features/workspaces/WorkspaceSwitcher.vue'
 
 const copy = workspaceCopy.shell
 const auth = useAuthStore()
@@ -29,6 +30,8 @@ async function signOut() {
 		<!-- 272px on desktop; the mobile drawer arrives in Plan B, so below
 		     1024px it narrows rather than disappearing. -->
 		<aside class="flex w-[272px] shrink-0 flex-col gap-6 border-r border-border bg-surface p-5 max-lg:w-[216px]">
+			<WorkspaceSwitcher />
+
 			<nav class="flex flex-col gap-1">
 				<RouterLink
 					:to="`/${workspace.slug}`"

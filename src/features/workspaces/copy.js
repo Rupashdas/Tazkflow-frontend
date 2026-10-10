@@ -9,4 +9,10 @@ export const workspaceCopy = {
 		home: 'Home',
 		signOut: 'Sign out',
 	},
+	switcher: {
+		label: 'Switch workspace',
+		others: 'Your workspaces',
+		onlyOne: 'This is your only workspace.',
+		owner: 'Owner',
+	},
 }
