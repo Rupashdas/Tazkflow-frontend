@@ -53,3 +53,23 @@ export function fieldErrors(error) {
 export function errorMessage(error, fallback) {
 	return error?.response?.data?.message ?? fallback
 }
+
+let onUnauthorized = null
+
+/** main.js registers what happens on a 401, so this file never imports the router. */
+export function setUnauthorizedHandler(fn) {
+	onUnauthorized = fn
+}
+
+api.interceptors.response.use(undefined, (error) => {
+	const status = error.response?.status
+
+	// 401: the session is gone. 403 account_deactivated: the whole account was
+	// switched off mid-session. Both mean the same thing here: out.
+	if (status === 401 || (status === 403 && error.response?.data?.code === 'account_deactivated')) {
+		csrfReady = false
+		onUnauthorized?.()
+	}
+
+	return Promise.reject(error)
+})

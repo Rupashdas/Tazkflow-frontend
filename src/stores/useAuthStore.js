@@ -38,11 +38,15 @@ export const useAuthStore = defineStore('auth', () => {
 		setUser(data.data)
 	}
 
-	async function logout() {
-		// No CSRF fetch: signing in already left a fresh XSRF cookie behind.
-		await api.post('/api/logout')
+	function clear() {
 		user.value = null
 	}
 
-	return { user, checked, isLoggedIn, setUser, fetchUser, login, logout }
+	async function logout() {
+		// No CSRF fetch: signing in already left a fresh XSRF cookie behind.
+		await api.post('/api/logout')
+		clear()
+	}
+
+	return { user, checked, isLoggedIn, setUser, fetchUser, login, logout, clear }
 })
