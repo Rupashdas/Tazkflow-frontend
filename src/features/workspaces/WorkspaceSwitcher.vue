@@ -10,7 +10,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from 'reka-ui'
-import { ChevronsUpDown } from 'lucide-vue-next'
+import { ChevronsUpDown, Plus } from 'lucide-vue-next'
 import { useWorkspaces } from './queries'
 import { initials } from './initials'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
@@ -78,6 +78,14 @@ const others = computed(() => (workspaces.value ?? []).filter((w) => w.slug !== 
 					@select="router.push('/workspaces')"
 				>
 					{{ copy.seeAll }}
+				</DropdownMenuItem>
+
+				<DropdownMenuItem
+					class="flex cursor-pointer items-center gap-2 rounded-nav px-3 py-2.5 text-[15px] font-semibold text-accent-text outline-none data-highlighted:bg-accent-soft"
+					@select="router.push('/welcome')"
+				>
+					<Plus class="size-4" aria-hidden="true" />
+					{{ copy.create }}
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenuPortal>

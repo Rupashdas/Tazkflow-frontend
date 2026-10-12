@@ -1,7 +1,7 @@
 <script setup>
 /**
  * What "/" means, decided at runtime:
- *   no workspace yet   → say so (Task 7 sends them to the wizard instead)
+ *   no workspace yet   → the setup wizard
  *   one or more        → the one they used last, else the first
  */
 import { onMounted, ref } from 'vue'
@@ -13,7 +13,7 @@ import { workspaceCopy } from './copy'
 const copy = workspaceCopy.landing
 const router = useRouter()
 const workspace = useWorkspaceStore()
-const state = ref('loading') // 'loading' | 'none' | 'error'
+const state = ref('loading') // 'loading' | 'error'
 
 async function open() {
 	state.value = 'loading'
@@ -22,7 +22,8 @@ async function open() {
 		const list = await fetchWorkspaces()
 
 		if (list.length === 0) {
-			state.value = 'none'
+			// Someone with no workspace has nothing to look at, so the wizard is home.
+			await router.replace('/welcome')
 			return
 		}
 
@@ -40,7 +41,6 @@ onMounted(open)
 <template>
 	<div class="flex min-h-screen flex-col items-center justify-center gap-4 bg-page px-6">
 		<p v-if="state === 'loading'" class="text-muted">{{ copy.opening }}</p>
-		<p v-else-if="state === 'none'" class="text-secondary">{{ copy.none }}</p>
 		<template v-else>
 			<p class="text-secondary">{{ copy.failed }}</p>
 			<button class="text-[15px] font-semibold text-accent-text" @click="open">{{ copy.retry }}</button>

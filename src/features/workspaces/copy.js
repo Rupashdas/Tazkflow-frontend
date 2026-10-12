@@ -1,7 +1,6 @@
 export const workspaceCopy = {
 	landing: {
 		opening: 'Opening your workspace…',
-		none: 'You are not a member of any workspace yet.',
 		failed: 'We could not load your workspaces.',
 		retry: 'Try again',
 	},
@@ -15,14 +14,17 @@ export const workspaceCopy = {
 		onlyOne: 'This is your only workspace.',
 		owner: 'Owner',
 		seeAll: 'See all workspaces',
+		create: 'Create a workspace',
 	},
 	list: {
 		overline: 'Your account',
 		title: 'Workspaces',
-		subtitle: 'Every workspace you can open.',
+		subtitle: 'Open one, or create another for a different team.',
 		open: 'Open',
 		owner: 'Owner',
 		emptyTitle: 'You are not in any workspace yet',
+		emptyBody: 'Create one to get started. You will be its owner.',
+		create: 'Create a workspace',
 		errorTitle: 'We could not load your workspaces',
 		retry: 'Try again',
 	},

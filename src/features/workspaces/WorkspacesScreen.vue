@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { Plus } from 'lucide-vue-next'
 import Button from '@/ui/Button.vue'
 import { useWorkspaces } from './queries'
 import { initials } from './initials'
@@ -51,28 +52,44 @@ const issue = computed(() => {
 				class="mt-8 rounded-card border border-border bg-surface p-9 text-center shadow-card"
 			>
 				<h2 class="text-[20px] font-semibold text-text">{{ copy.emptyTitle }}</h2>
+				<p class="mx-auto mt-2 max-w-[420px] text-secondary">{{ copy.emptyBody }}</p>
+				<div class="mt-6 flex justify-center">
+					<Button @click="router.push('/welcome')">
+						<Plus class="size-4" aria-hidden="true" />
+						{{ copy.create }}
+					</Button>
+				</div>
 			</div>
 
-			<ul v-else class="mt-8 flex flex-col gap-3">
-				<li
-					v-for="item in workspaces"
-					:key="item.slug"
-					class="flex items-center gap-5 rounded-card border border-border bg-surface p-5 shadow-card"
-				>
-					<span
-						class="flex size-11 shrink-0 items-center justify-center rounded-card bg-surface-subtle text-[15px] font-bold text-secondary"
+			<template v-else>
+				<ul class="mt-8 flex flex-col gap-3">
+					<li
+						v-for="item in workspaces"
+						:key="item.slug"
+						class="flex items-center gap-5 rounded-card border border-border bg-surface p-5 shadow-card"
 					>
-						{{ initials(item.name) }}
-					</span>
-					<span class="min-w-0 flex-1">
-						<span class="block truncate text-[16px] font-semibold text-text">{{ item.name }}</span>
-						<span class="block truncate text-[14px] text-muted">
-							tazkflow.app/{{ item.slug }} · {{ item.is_owner ? copy.owner : (item.role?.label ?? '—') }}
+						<span
+							class="flex size-11 shrink-0 items-center justify-center rounded-card bg-surface-subtle text-[15px] font-bold text-secondary"
+						>
+							{{ initials(item.name) }}
 						</span>
-					</span>
-					<Button variant="secondary" @click="router.push(`/${item.slug}`)">{{ copy.open }}</Button>
-				</li>
-			</ul>
+						<span class="min-w-0 flex-1">
+							<span class="block truncate text-[16px] font-semibold text-text">{{ item.name }}</span>
+							<span class="block truncate text-[14px] text-muted">
+								tazkflow.app/{{ item.slug }} · {{ item.is_owner ? copy.owner : (item.role?.label ?? '—') }}
+							</span>
+						</span>
+						<Button variant="secondary" @click="router.push(`/${item.slug}`)">{{ copy.open }}</Button>
+					</li>
+				</ul>
+
+				<div class="mt-6">
+					<Button variant="secondary" @click="router.push('/welcome')">
+						<Plus class="size-4" aria-hidden="true" />
+						{{ copy.create }}
+					</Button>
+				</div>
+			</template>
 		</div>
 	</div>
 </template>
