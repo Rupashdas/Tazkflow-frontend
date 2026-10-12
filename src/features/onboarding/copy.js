@@ -1,4 +1,8 @@
 export const onboardingCopy = {
+	steps: {
+		workspace: 'Workspace',
+		invite: 'Invite people',
+	},
 	create: {
 		title: 'Create your workspace',
 		subtitle: 'A workspace holds your projects, your team and their permissions. You can create more later.',
@@ -11,5 +15,25 @@ export const onboardingCopy = {
 		noteAfter: 'You can change them in settings at any time.',
 		submit: 'Continue',
 		failed: 'We could not create the workspace. Please check the form and try again.',
+	},
+	invite: {
+		title: 'Invite your team',
+		subtitle: 'Each person gets an email with a link. You can invite more people later from settings.',
+		emailLabel: 'Email address',
+		emailPlaceholder: 'name@company.com',
+		roleLabel: 'Role',
+		add: 'Add another',
+		paste: 'or paste a few addresses at once',
+		remove: 'Remove this row',
+		later: "I'll do this later",
+		submit: 'Send {count} invites',
+		submitOne: 'Send 1 invite',
+		rowFailed: 'This invitation failed.',
+		partial: 'Some invitations could not be sent. The rows below say why.',
+		roleHints: {
+			admin: 'Settings, people and roles',
+			member: 'Normal team member',
+			guest: 'Only the projects they are added to',
+		},
 	},
 }

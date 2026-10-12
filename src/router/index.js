@@ -58,6 +58,12 @@ export const router = createRouter({
 			meta: { requiresAuth: true },
 		},
 		{
+			path: '/welcome/:workspace/invite',
+			name: 'welcome-invite',
+			component: () => import('@/features/onboarding/InvitePeopleScreen.vue'),
+			meta: { requiresAuth: true },
+		},
+		{
 			path: '/:workspace',
 			component: () => import('@/layouts/AppLayout.vue'),
 			meta: { requiresAuth: true },
