@@ -34,6 +34,14 @@ export const authGuard = async (to) => {
 	// Routes under /:workspace carry the slug that every API call needs.
 	const slug = to.params.workspace
 	if (typeof slug === 'string' && slug.length > 0) {
+		// Real slugs are lower case. The API matches /ACME to "acme" anyway, but
+		// the app compares slugs exactly (switcher, cache keys, remembered slug),
+		// so keep one spelling in the URL before anything stores it.
+		const lower = slug.toLowerCase()
+		if (lower !== slug) {
+			return { name: to.name, params: { ...to.params, workspace: lower }, query: to.query, hash: to.hash, replace: true }
+		}
+
 		useWorkspaceStore().setSlug(slug)
 	}
 
