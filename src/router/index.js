@@ -46,6 +46,12 @@ export const router = createRouter({
 			meta: { requiresAuth: true },
 		},
 		{
+			path: '/workspaces',
+			name: 'workspaces',
+			component: () => import('@/features/workspaces/WorkspacesScreen.vue'),
+			meta: { requiresAuth: true },
+		},
+		{
 			path: '/:workspace',
 			component: () => import('@/layouts/AppLayout.vue'),
 			meta: { requiresAuth: true },

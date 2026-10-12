@@ -7,10 +7,12 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuPortal,
 	DropdownMenuRoot,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from 'reka-ui'
 import { ChevronsUpDown } from 'lucide-vue-next'
 import { useWorkspaces } from './queries'
+import { initials } from './initials'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
 import { workspaceCopy } from './copy'
 
@@ -21,16 +23,6 @@ const { data: workspaces } = useWorkspaces()
 
 const current = computed(() => workspaces.value?.find((w) => w.slug === workspace.slug))
 const others = computed(() => (workspaces.value ?? []).filter((w) => w.slug !== workspace.slug))
-
-/** Initials for the square mark; two letters at most so it never overflows. */
-function initials(name) {
-	return name
-		.split(' ')
-		.filter(Boolean)
-		.slice(0, 2)
-		.map((part) => part[0]?.toUpperCase() ?? '')
-		.join('')
-}
 </script>
 
 <template>
@@ -78,6 +70,15 @@ function initials(name) {
 				</DropdownMenuItem>
 
 				<p v-if="others.length === 0" class="px-3 py-2 text-[14px] text-muted">{{ copy.onlyOne }}</p>
+
+				<DropdownMenuSeparator class="my-2 h-px bg-divider" />
+
+				<DropdownMenuItem
+					class="flex cursor-pointer items-center gap-3 rounded-nav px-3 py-2.5 text-[15px] text-text outline-none data-highlighted:bg-surface-subtle"
+					@select="router.push('/workspaces')"
+				>
+					{{ copy.seeAll }}
+				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenuPortal>
 	</DropdownMenuRoot>
