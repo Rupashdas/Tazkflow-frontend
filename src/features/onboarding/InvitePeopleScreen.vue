@@ -169,7 +169,7 @@ async function send() {
 					<button
 						v-if="rows.length > 1"
 						type="button"
-						class="mt-3 text-icon-muted hover:text-text max-md:mt-0"
+						class="mt-[3px] flex size-11 shrink-0 items-center justify-center text-icon-muted hover:text-text max-md:mt-0"
 						:aria-label="copy.remove"
 						@click="rows.splice(index, 1)"
 					>
@@ -181,7 +181,7 @@ async function send() {
 			</div>
 
 			<div class="flex flex-wrap items-center gap-4">
-				<button type="button" class="flex items-center gap-1.5 text-[15px] font-semibold text-accent-text" @click="addRow">
+				<button type="button" class="flex min-h-10 items-center gap-1.5 text-[15px] font-semibold text-accent-text" @click="addRow">
 					<Plus class="size-4" aria-hidden="true" />
 					{{ copy.add }}
 				</button>

@@ -20,6 +20,21 @@ php artisan queue:work   # verification and invitation emails
 
 Seeded logins: `admin@example.com`, `rupash.das.202@gmail.com` — password `Pass123#`.
 
+## What is built (Plan A)
+
+| Path | Screen |
+|---|---|
+| `/login`, `/register` | sign in, sign up |
+| `/forgot-password`, `/reset-password` | password reset |
+| `/verify-email`, `/email-verified` | email confirmation |
+| `/invitations/:token` | accept an invitation, or join with an existing account |
+| `/welcome`, `/welcome/:workspace/invite` | two-step setup wizard |
+| `/workspaces` | every workspace you can open |
+| `/:workspace` | the app shell and Home |
+
+Settings and Account screens are Plan B:
+`../docs/superpowers/plans/2026-09-28-frontend-foundation-b.md`.
+
 ## How the theme works
 
 `<html>` carries `data-theme` (`light`/`dark`) and `data-accent` (`blue`, `violet`,
