@@ -1,5 +1,6 @@
 <script setup>
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import Button from '@/ui/Button.vue'
 import { useWorkspaces } from './queries'
 import { initials } from './initials'
@@ -7,7 +8,15 @@ import { workspaceCopy } from './copy'
 
 const copy = workspaceCopy.list
 const router = useRouter()
+const route = useRoute()
 const { data: workspaces, isPending, isError, refetch } = useWorkspaces()
+
+// Why they were sent here, if they were sent here.
+const issue = computed(() => {
+	const code = route.query.issue
+	if (typeof code !== 'string') return ''
+	return workspaceCopy.issues[code] ?? ''
+})
 </script>
 
 <template>
@@ -20,6 +29,10 @@ const { data: workspaces, isPending, isError, refetch } = useWorkspaces()
 		</header>
 
 		<div class="mx-auto max-w-[720px] px-6 py-12">
+			<p v-if="issue" class="mb-8 rounded-control bg-warning-soft px-4 py-3 text-[14px] text-warning-text" role="status">
+				{{ issue }}
+			</p>
+			
 			<p class="text-[13px] font-semibold uppercase tracking-[0.08em] text-muted">{{ copy.overline }}</p>
 			<h1 class="mt-2.5 text-[28px] font-bold tracking-[-0.02em] text-text">{{ copy.title }}</h1>
 			<p class="mt-2 text-secondary">{{ copy.subtitle }}</p>

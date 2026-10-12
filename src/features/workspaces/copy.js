@@ -26,4 +26,8 @@ export const workspaceCopy = {
 		errorTitle: 'We could not load your workspaces',
 		retry: 'Try again',
 	},
+	issues: {
+		workspace_not_found: 'That workspace was not found, or you no longer have access to it.',
+		workspace_access_disabled: 'Your access to that workspace has been turned off.',
+	},
 }

@@ -61,6 +61,13 @@ export function setUnauthorizedHandler(fn) {
 	onUnauthorized = fn
 }
 
+let onWorkspaceError = null
+
+/** main.js decides where to send someone whose workspace is gone or switched off. */
+export function setWorkspaceErrorHandler(fn) {
+	onWorkspaceError = fn
+}
+
 api.interceptors.response.use(undefined, (error) => {
 	const status = error.response?.status
 
@@ -69,6 +76,11 @@ api.interceptors.response.use(undefined, (error) => {
 	if (status === 401 || (status === 403 && error.response?.data?.code === 'account_deactivated')) {
 		csrfReady = false
 		onUnauthorized?.()
+	}
+
+	const code = error.response?.data?.code
+	if ((status === 404 && code === 'workspace_not_found') || (status === 403 && code === 'workspace_access_disabled')) {
+		onWorkspaceError?.(code)
 	}
 
 	return Promise.reject(error)
