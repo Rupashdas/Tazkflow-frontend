@@ -19,13 +19,25 @@ const errors = ref({})
 const formError = ref('')
 const submitting = ref(false)
 
-/** The same shape the API accepts: lower case, hyphens, no leading or trailing dash. */
-function slugify(value) {
+/**
+ * Lower case, with every run of other characters turned into one dash. The ends
+ * are left alone, so a dash typed at the end survives until the next letter.
+ */
+function slugChars(value) {
 	return value
 		.toLowerCase()
 		.replace(/[^a-z0-9]+/g, '-')
-		.replace(/^-+|-+$/g, '')
 		.slice(0, 60)
+}
+
+/** No leading or trailing dash: the API rejects them. */
+function trimDashes(value) {
+	return value.replace(/^-+|-+$/g, '')
+}
+
+/** The same shape the API accepts. Cut to 60 first, so the cut cannot leave a dash at the end. */
+function slugify(value) {
+	return trimDashes(slugChars(value))
 }
 
 // The URL follows the name until the person edits it themselves.
@@ -33,20 +45,26 @@ watch(name, (value) => {
 	if (!slugTouched.value) slug.value = slugify(value)
 })
 
-function onSlugInput(value) {
+function onSlugInput(input) {
 	slugTouched.value = true
-	slug.value = slugify(value)
+	slug.value = slugChars(input.value)
+	// When the cleaned value equals the old one (a second dash typed after a
+	// dash), Vue sees no change and would leave the raw text in the field.
+	input.value = slug.value
 }
 
-// An emptied URL goes back to following the name, so the person always sees
-// the URL that will be used.
+// The ends are trimmed when the person leaves the field. An emptied URL goes
+// back to following the name, so the person always sees the URL that will be used.
 function onSlugBlur() {
+	slug.value = trimDashes(slug.value)
 	if (slug.value !== '') return
 	slugTouched.value = false
 	slug.value = slugify(name.value)
 }
 
 async function submit() {
+	// Enter submits without leaving the field, so blur may not have run.
+	slug.value = trimDashes(slug.value)
 	submitting.value = true
 	errors.value = {}
 	formError.value = ''
@@ -99,7 +117,7 @@ async function submit() {
 						autocomplete="off"
 						class="min-w-0 flex-1 bg-surface px-4 text-[16px] text-text outline-none!"
 						:aria-invalid="errors.slug ? 'true' : undefined"
-						@input="onSlugInput($event.target.value)"
+						@input="onSlugInput($event.target)"
 						@blur="onSlugBlur"
 					/>
 				</div>
