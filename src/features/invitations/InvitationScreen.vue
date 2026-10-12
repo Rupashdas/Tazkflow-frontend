@@ -7,13 +7,11 @@ import TextField from '@/ui/TextField.vue'
 import { api, ensureCsrfCookie, fieldErrors, errorMessage } from '@/lib/api'
 import { queryClient } from '@/lib/queryClient'
 import { useAuthStore } from '@/stores/useAuthStore'
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
 import { invitationCopy as copy } from './copy'
 
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
-const workspace = useWorkspaceStore()
 
 const token = String(route.params.token ?? '')
 const invitation = ref(null)
@@ -101,7 +99,6 @@ async function join() {
 
 async function signOut() {
 	await auth.logout()
-	workspace.clear()
 	// Same page, now as a guest, so the invitation can be taken up properly.
 	router.go(0)
 }

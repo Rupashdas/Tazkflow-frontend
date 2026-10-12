@@ -23,7 +23,7 @@ setUnauthorizedHandler(() => {
 	const auth = useAuthStore()
 	if (!auth.isLoggedIn) return
 
-	auth.clear()
+	auth.endSession()
 	router.replace({ path: '/login', query: { next: router.currentRoute.value.fullPath } })
 })
 

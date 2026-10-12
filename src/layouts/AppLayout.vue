@@ -20,7 +20,6 @@ const router = useRouter()
 
 async function signOut() {
 	await auth.logout()
-	workspace.clear()
 	await router.replace('/login')
 }
 </script>

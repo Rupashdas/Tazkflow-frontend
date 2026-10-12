@@ -1,6 +1,8 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { api, ensureCsrfCookie } from '@/lib/api'
+import { queryClient } from '@/lib/queryClient'
+import { useWorkspaceStore } from './useWorkspaceStore'
 import { ACCENTS, applyAccent, applyAppearance } from '@/lib/theme'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -38,15 +40,21 @@ export const useAuthStore = defineStore('auth', () => {
 		setUser(data.data)
 	}
 
-	function clear() {
+	/**
+	 * Forget everything this session loaded, so the next person to sign in on
+	 * this tab never sees the last one's workspaces from the query cache.
+	 */
+	function endSession() {
 		user.value = null
+		queryClient.clear()
+		useWorkspaceStore().clear()
 	}
 
 	async function logout() {
 		// No CSRF fetch: signing in already left a fresh XSRF cookie behind.
 		await api.post('/api/logout')
-		clear()
+		endSession()
 	}
 
-	return { user, checked, isLoggedIn, setUser, fetchUser, login, logout, clear }
+	return { user, checked, isLoggedIn, setUser, fetchUser, login, logout, endSession }
 })
