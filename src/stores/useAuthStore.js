@@ -50,9 +50,18 @@ export const useAuthStore = defineStore('auth', () => {
 		useWorkspaceStore().clear()
 	}
 
+	/**
+	 * Never throws. Someone who clicks Sign out must end up signed out on this
+	 * device, even when the server cannot be reached, answers 419 or fails.
+	 */
 	async function logout() {
-		// No CSRF fetch: signing in already left a fresh XSRF cookie behind.
-		await api.post('/api/logout')
+		try {
+			// No CSRF fetch: signing in already left a fresh XSRF cookie behind.
+			await api.post('/api/logout')
+		} catch {
+			// The server session may outlive this, but the screen must not keep
+			// showing the account to whoever uses this device next.
+		}
 		endSession()
 	}
 
