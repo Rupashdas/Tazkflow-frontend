@@ -13,7 +13,9 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
-const token = String(route.params.token ?? '')
+// The router decodes params, so a token of "..%2Froles" arrives as "../roles"
+// and would retarget the request to /api/roles. Encoding keeps it one segment.
+const path = `/api/invitations/${encodeURIComponent(String(route.params.token ?? ''))}`
 const invitation = ref(null)
 const loading = ref(true)
 const invalid = ref(false)
@@ -43,7 +45,7 @@ const invitedBy = computed(() =>
 
 onMounted(async () => {
 	try {
-		const { data } = await api.get(`/api/invitations/${token}`)
+		const { data } = await api.get(path)
 		invitation.value = data.data
 		name.value = data.data.name
 	} catch {
@@ -65,7 +67,7 @@ async function accept() {
 
 	try {
 		await ensureCsrfCookie()
-		const { data } = await api.post(`/api/invitations/${token}/accept`, {
+		const { data } = await api.post(`${path}/accept`, {
 			name: name.value,
 			password: password.value,
 			password_confirmation: passwordConfirmation.value,
@@ -90,7 +92,7 @@ async function join() {
 
 	try {
 		await ensureCsrfCookie()
-		const { data } = await api.post(`/api/invitations/${token}/join`)
+		const { data } = await api.post(`${path}/join`)
 		await enter(data.data.slug)
 	} catch (error) {
 		formError.value = errorMessage(error, copy.failed)
