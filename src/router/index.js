@@ -64,6 +64,11 @@ export const router = createRouter({
 			meta: { requiresAuth: true },
 		},
 		{
+			path: '/invitations/:token',
+			name: 'invitation',
+			component: () => import('@/features/invitations/InvitationScreen.vue'),
+		},
+		{
 			path: '/:workspace',
 			component: () => import('@/layouts/AppLayout.vue'),
 			meta: { requiresAuth: true },
