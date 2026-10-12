@@ -13,6 +13,10 @@ export const authGuard = async (to) => {
 
 	if (!auth.checked) await auth.fetchUser()
 
+	// The API did not answer. App.vue shows the retry screen instead of the
+	// route, and retrying runs this guard again once there is an answer.
+	if (auth.unreachable) return true
+
 	if (to.meta.requiresAuth && !auth.isLoggedIn) {
 		return { path: '/login', query: { next: to.fullPath } }
 	}

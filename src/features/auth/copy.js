@@ -62,6 +62,12 @@ export const authCopy = {
 		stillWaiting: 'Still not confirmed. Open the link in your email first.',
 		signOut: 'Sign out',
 	},
+	unreachable: {
+		title: 'We can’t reach Tazkflow',
+		subtitle: 'Check your internet connection. If it is working, Tazkflow may be restarting — try again in a moment.',
+		retry: 'Try again',
+		stillDown: 'Still no answer. Wait a moment and try again.',
+	},
 	verified: {
 		confirmed: {
 			title: 'Email confirmed',

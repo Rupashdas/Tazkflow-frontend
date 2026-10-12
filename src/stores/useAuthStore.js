@@ -9,6 +9,8 @@ export const useAuthStore = defineStore('auth', () => {
 	const user = ref(null)
 	/** True once we have asked the API whether there is a session. */
 	const checked = ref(false)
+	/** The API gave no answer (offline, down, 5xx), so we cannot tell. */
+	const unreachable = ref(false)
 	const isLoggedIn = computed(() => user.value !== null)
 
 	function setUser(value) {
@@ -25,12 +27,24 @@ export const useAuthStore = defineStore('auth', () => {
 		try {
 			const { data } = await api.get('/api/user')
 			setUser(data.data)
-		} catch {
-			// 401 here simply means "no session yet".
+		} catch (error) {
+			const status = error.response?.status
+
+			// No answer, or the server broke: we do not know whether there is a
+			// session, so sending them to sign in would be a guess. Stay unchecked.
+			if (!status || status >= 500) {
+				unreachable.value = true
+				return
+			}
+
+			// 401 (or a 403 for a switched-off account): no session.
 			user.value = null
-		} finally {
-			checked.value = true
 		}
+
+		// Cleared only once there is an answer, so the retry screen stays up
+		// while a retry is in flight instead of flashing the route underneath.
+		unreachable.value = false
+		checked.value = true
 	}
 
 	async function login(email, password, remember) {
@@ -65,5 +79,5 @@ export const useAuthStore = defineStore('auth', () => {
 		endSession()
 	}
 
-	return { user, checked, isLoggedIn, setUser, fetchUser, login, logout, endSession }
+	return { user, checked, unreachable, isLoggedIn, setUser, fetchUser, login, logout, endSession }
 })
