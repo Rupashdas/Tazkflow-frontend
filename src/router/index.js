@@ -84,6 +84,13 @@ export const router = createRouter({
 				},
 			],
 		},
+		{
+			// Anything no route above matches, e.g. /a/b. A single unknown segment
+			// is still /:workspace, and the API answers that one.
+			path: '/:pathMatch(.*)*',
+			name: 'not-found',
+			component: () => import('@/features/not-found/NotFoundScreen.vue'),
+		},
 	],
 })
 
