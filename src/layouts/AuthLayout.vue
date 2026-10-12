@@ -1,9 +1,13 @@
 <script setup>
-/** The centred card used by every screen a signed-out visitor can reach. */
+/**
+ * The card used by every screen a signed-out visitor can reach. It sits a fixed
+ * distance from the top rather than centred, so the logo and heading stay put
+ * whether the card holds a long form or one line.
+ */
 </script>
 
 <template>
-	<div class="flex min-h-screen items-center justify-center bg-page px-6 py-12">
+	<div class="flex min-h-screen items-start justify-center bg-page px-6 pt-12 pb-12 md:pt-24">
 		<div class="w-full max-w-[460px]">
 			<div class="mb-8 flex items-center justify-center gap-3">
 				<svg class="size-9" viewBox="0 0 100 100" aria-hidden="true">
