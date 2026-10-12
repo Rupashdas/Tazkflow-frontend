@@ -30,6 +30,9 @@ export const onboardingCopy = {
 		submitOne: 'Send 1 invite',
 		rowFailed: 'This invitation failed.',
 		partial: 'Some invitations could not be sent. The rows below say why.',
+		failed: 'Nothing was sent. Check your connection and try again.',
+		noPermission: 'Only the owner and admins can invite people to this workspace.',
+		rolesFailed: 'We could not load the roles, so invitations cannot be sent yet. Reload the page to try again.',
 		roleHints: {
 			admin: 'Settings, people and roles',
 			member: 'Normal team member',

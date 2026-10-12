@@ -54,6 +54,15 @@ export function errorMessage(error, fallback) {
 	return error?.response?.data?.message ?? fallback
 }
 
+/**
+ * 401: the session is gone. 403 account_deactivated: the whole account was
+ * switched off mid-session. Both mean the same thing here: out.
+ */
+export function endsSession(error) {
+	const status = error?.response?.status
+	return status === 401 || (status === 403 && error.response.data?.code === 'account_deactivated')
+}
+
 let onUnauthorized = null
 
 /** main.js registers what happens on a 401, so this file never imports the router. */
@@ -83,9 +92,7 @@ api.interceptors.response.use(undefined, async (error) => {
 		return api(config)
 	}
 
-	// 401: the session is gone. 403 account_deactivated: the whole account was
-	// switched off mid-session. Both mean the same thing here: out.
-	if (status === 401 || (status === 403 && error.response?.data?.code === 'account_deactivated')) {
+	if (endsSession(error)) {
 		csrfReady = false
 		onUnauthorized?.()
 	}

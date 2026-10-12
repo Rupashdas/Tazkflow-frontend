@@ -15,21 +15,30 @@ import {
 import { Check, ChevronDown, Plus, X } from 'lucide-vue-next'
 import WizardLayout from '@/layouts/WizardLayout.vue'
 import Button from '@/ui/Button.vue'
-import { api, ensureCsrfCookie, fieldErrors, errorMessage } from '@/lib/api'
+import { api, endsSession, ensureCsrfCookie, fieldErrors, errorMessage } from '@/lib/api'
 import { useRoles } from '@/features/workspaces/queries'
 import { onboardingCopy } from './copy'
 
 const copy = onboardingCopy.invite
 const route = useRoute()
 const router = useRouter()
-const { data: roles } = useRoles()
+const { data: roles, error: rolesError } = useRoles()
+
+// Without roles every row would send role_id 0, so Send waits for them.
+const rolesReady = computed(() => (roles.value?.length ?? 0) > 0)
+
+// A member who opens this URL directly has no roles.view and gets a 403.
+const rolesProblem = computed(() => {
+	if (!rolesError.value) return ''
+	return rolesError.value.response?.status === 403 ? copy.noPermission : copy.rolesFailed
+})
 
 const rows = ref([
 	{ email: '', roleId: '', error: '' },
 	{ email: '', roleId: '', error: '' },
 ])
 const sending = ref(false)
-const partialError = ref('')
+const formError = ref('')
 
 // Member is the sensible default for a teammate; every new workspace has it.
 const defaultRoleId = computed(() => {
@@ -68,34 +77,45 @@ function finish() {
 
 async function send() {
 	sending.value = true
-	partialError.value = ''
+	formError.value = ''
 	for (const row of rows.value) row.error = ''
 
-	await ensureCsrfCookie()
 	let failed = 0
 
-	// One request per row, so one bad address does not throw the rest away.
-	for (const row of rows.value) {
-		if (row.email.trim() === '') continue
+	try {
+		await ensureCsrfCookie()
 
-		try {
-			await api.post('/api/invitations', {
-				name: row.email.split('@')[0],
-				email: row.email.trim(),
-				role_id: Number(row.roleId),
-			})
-			row.email = ''
-		} catch (error) {
-			failed += 1
-			const errors = fieldErrors(error)
-			row.error = errors.email ?? errors.role_id ?? errorMessage(error, copy.rowFailed)
+		// One request per row, so one bad address does not throw the rest away.
+		for (const row of rows.value) {
+			if (row.email.trim() === '') continue
+
+			try {
+				await api.post('/api/invitations', {
+					name: row.email.split('@')[0],
+					email: row.email.trim(),
+					role_id: Number(row.roleId),
+				})
+				row.email = ''
+			} catch (error) {
+				// The unauthorized handler is already taking them to sign in;
+				// the other rows would only fail the same way.
+				if (endsSession(error)) return
+
+				failed += 1
+				const errors = fieldErrors(error)
+				row.error = errors.email ?? errors.role_id ?? errorMessage(error, copy.rowFailed)
+			}
 		}
+	} catch (error) {
+		// No XSRF cookie, usually no connection: nothing was sent.
+		formError.value = errorMessage(error, copy.failed)
+		return
+	} finally {
+		sending.value = false
 	}
 
-	sending.value = false
-
 	if (failed === 0) finish()
-	else partialError.value = copy.partial
+	else formError.value = copy.partial
 }
 </script>
 
@@ -104,8 +124,12 @@ async function send() {
 		<h1 class="text-[28px] font-bold leading-tight tracking-[-0.02em] text-text">{{ copy.title }}</h1>
 		<p class="mt-2 text-secondary">{{ copy.subtitle }}</p>
 
-		<p v-if="partialError" class="mt-6 rounded-control bg-danger-soft px-4 py-3 text-[14px] text-danger-text" role="alert">
-			{{ partialError }}
+		<p
+			v-if="rolesProblem || formError"
+			class="mt-6 rounded-control bg-danger-soft px-4 py-3 text-[14px] text-danger-text"
+			role="alert"
+		>
+			{{ rolesProblem || formError }}
 		</p>
 
 		<div class="mt-7 flex flex-col gap-4">
@@ -191,7 +215,7 @@ async function send() {
 
 		<div class="mt-8 flex items-center justify-between gap-3.5 border-t border-divider pt-6.5">
 			<Button variant="ghost" @click="finish">{{ copy.later }}</Button>
-			<Button :loading="sending" :disabled="filled.length === 0" @click="send">{{ submitLabel }}</Button>
+			<Button :loading="sending" :disabled="filled.length === 0 || !rolesReady" @click="send">{{ submitLabel }}</Button>
 		</div>
 	</WizardLayout>
 </template>
