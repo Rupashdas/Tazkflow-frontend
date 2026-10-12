@@ -18,7 +18,10 @@ const auth = useAuthStore()
 const path = `/api/invitations/${encodeURIComponent(String(route.params.token ?? ''))}`
 const invitation = ref(null)
 const loading = ref(true)
-const invalid = ref(false)
+/** The server's reason when the invitation is gone for good (404/410). */
+const invalid = ref('')
+/** No usable answer (offline, 429, 5xx): the invitation may be fine. */
+const loadFailed = ref(false)
 const name = ref('')
 const password = ref('')
 const passwordConfirmation = ref('')
@@ -43,17 +46,26 @@ const invitedBy = computed(() =>
 		.replace('{role}', invitation.value?.role ?? copy.defaultRole),
 )
 
-onMounted(async () => {
+async function load() {
+	loading.value = true
+	loadFailed.value = false
+
 	try {
 		const { data } = await api.get(path)
 		invitation.value = data.data
 		name.value = data.data.name
-	} catch {
-		invalid.value = true
+	} catch (error) {
+		const status = error.response?.status
+
+		// 404 not found, 410 used or expired: the server says which.
+		if (status === 404 || status === 410) invalid.value = errorMessage(error, copy.invalidBody)
+		else loadFailed.value = true
 	} finally {
 		loading.value = false
 	}
-})
+}
+
+onMounted(load)
 
 async function enter(slug) {
 	await queryClient.invalidateQueries({ queryKey: ['workspaces'] })
@@ -114,7 +126,15 @@ async function signOut() {
 
 		<template v-else-if="invalid">
 			<h1 class="text-[28px] font-bold tracking-[-0.02em] text-text">{{ copy.invalidTitle }}</h1>
-			<p class="mt-2 text-secondary">{{ copy.invalidBody }}</p>
+			<p class="mt-2 text-secondary">{{ invalid }}</p>
+		</template>
+
+		<template v-else-if="loadFailed">
+			<h1 class="text-[28px] font-bold tracking-[-0.02em] text-text">{{ copy.loadFailedTitle }}</h1>
+			<p class="mt-2 text-secondary">{{ copy.loadFailedBody }}</p>
+			<div class="mt-8">
+				<Button @click="load">{{ copy.retry }}</Button>
+			</div>
 		</template>
 
 		<template v-else>
