@@ -46,25 +46,25 @@ export const router = createRouter({
 			path: '/',
 			name: 'landing',
 			component: () => import('@/features/workspaces/LandingScreen.vue'),
-			meta: { requiresAuth: true },
+			meta: { requiresAuth: true, requiresVerified: true },
 		},
 		{
 			path: '/workspaces',
 			name: 'workspaces',
 			component: () => import('@/features/workspaces/WorkspacesScreen.vue'),
-			meta: { requiresAuth: true },
+			meta: { requiresAuth: true, requiresVerified: true },
 		},
 		{
 			path: '/welcome',
 			name: 'welcome',
 			component: () => import('@/features/onboarding/CreateWorkspaceScreen.vue'),
-			meta: { requiresAuth: true },
+			meta: { requiresAuth: true, requiresVerified: true },
 		},
 		{
 			path: '/welcome/:workspace/invite',
 			name: 'welcome-invite',
 			component: () => import('@/features/onboarding/InvitePeopleScreen.vue'),
-			meta: { requiresAuth: true },
+			meta: { requiresAuth: true, requiresVerified: true },
 		},
 		{
 			path: '/invitations/:token',
@@ -74,7 +74,7 @@ export const router = createRouter({
 		{
 			path: '/:workspace',
 			component: () => import('@/layouts/AppLayout.vue'),
-			meta: { requiresAuth: true },
+			meta: { requiresAuth: true, requiresVerified: true },
 			children: [
 				{
 					path: '',

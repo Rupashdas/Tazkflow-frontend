@@ -24,12 +24,14 @@ const errors = ref({})
 const formError = ref('')
 const working = ref(false)
 
-/** Which of the four situations this visitor is in. */
+/** Which of the five situations this visitor is in. */
 const mode = computed(() => {
 	const data = invitation.value
 	if (!data) return 'create'
 	if (!auth.isLoggedIn) return data.account_exists ? 'signIn' : 'create'
-	return auth.user?.email.toLowerCase() === data.email.toLowerCase() ? 'join' : 'wrongAccount'
+	if (auth.user?.email.toLowerCase() !== data.email.toLowerCase()) return 'wrongAccount'
+	// The API only lets a confirmed address join.
+	return auth.user.email_verified ? 'join' : 'confirmFirst'
 })
 
 const title = computed(() => copy.title.replace('{workspace}', invitation.value?.workspace.name ?? ''))
@@ -142,6 +144,17 @@ async function signOut() {
 				<h2 class="text-[20px] font-semibold text-text">{{ copy.joinTitle }}</h2>
 				<div class="mt-5">
 					<Button :loading="working" @click="join">{{ copy.join }}</Button>
+				</div>
+			</div>
+
+			<!-- Signed in with the invited address, not confirmed yet. ?next brings them back here. -->
+			<div v-else-if="mode === 'confirmFirst'" class="mt-8">
+				<h2 class="text-[20px] font-semibold text-text">{{ copy.confirmFirstTitle }}</h2>
+				<p class="mt-2 text-secondary">{{ copy.confirmFirstBody.replace('{email}', auth.user.email) }}</p>
+				<div class="mt-5">
+					<Button @click="router.push({ path: '/verify-email', query: { next: route.fullPath } })">
+						{{ copy.confirmFirst }}
+					</Button>
 				</div>
 			</div>
 

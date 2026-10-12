@@ -6,7 +6,7 @@ import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
  *
  * On a cold page load we do not yet know whether there is a session, so the
  * first navigation asks the API once. Routes then say what they need through
- * meta: `requiresAuth` or `guestOnly`.
+ * meta: `requiresAuth`, `requiresVerified` or `guestOnly`.
  */
 export const authGuard = async (to) => {
 	const auth = useAuthStore()
@@ -15,6 +15,12 @@ export const authGuard = async (to) => {
 
 	if (to.meta.requiresAuth && !auth.isLoggedIn) {
 		return { path: '/login', query: { next: to.fullPath } }
+	}
+
+	// The API refuses most work until the address is confirmed, so send the
+	// person to the screen that can resend the link instead of a dead end.
+	if (to.meta.requiresVerified && auth.isLoggedIn && !auth.user.email_verified) {
+		return { path: '/verify-email' }
 	}
 
 	if (to.meta.guestOnly && auth.isLoggedIn) {

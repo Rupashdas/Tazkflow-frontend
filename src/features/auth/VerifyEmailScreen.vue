@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import Button from '@/ui/Button.vue'
 import { api, errorMessage } from '@/lib/api'
@@ -9,6 +9,7 @@ import { authCopy } from './copy'
 
 const copy = authCopy.verify
 const auth = useAuthStore()
+const route = useRoute()
 const router = useRouter()
 
 const notice = ref('')
@@ -45,7 +46,8 @@ async function recheck() {
 
 	await auth.fetchUser()
 	if (auth.user?.email_verified) {
-		await router.replace('/')
+		// An invitation sends people here with ?next so they can return to it.
+		await router.replace(typeof route.query.next === 'string' ? route.query.next : '/')
 	} else {
 		notice.value = copy.stillWaiting
 	}
