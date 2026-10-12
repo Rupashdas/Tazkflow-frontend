@@ -7,10 +7,16 @@ import Button from '@/ui/Button.vue'
 import TextField from '@/ui/TextField.vue'
 import { api, ensureCsrfCookie, fieldErrors, errorMessage } from '@/lib/api'
 import { queryClient } from '@/lib/queryClient'
+import { useWorkspaces } from '@/features/workspaces/queries'
 import { onboardingCopy } from './copy'
 
 const copy = onboardingCopy.create
 const router = useRouter()
+
+// Someone who already has a workspace came here by choice and may change
+// their mind. For a first workspace the wizard is the only way in, so no exit.
+const { data: workspaces } = useWorkspaces()
+const canCancel = computed(() => (workspaces.value?.length ?? 0) > 0)
 
 const name = ref('')
 const slug = ref('')
@@ -143,7 +149,9 @@ async function submit() {
 				</div>
 			</div>
 
-			<div class="flex justify-end border-t border-divider pt-6.5">
+			<div class="flex items-center justify-end gap-3.5 border-t border-divider pt-6.5">
+				<!-- "/" opens the workspace they used last. -->
+				<Button v-if="canCancel" variant="ghost" class="mr-auto" @click="router.push('/')">{{ copy.cancel }}</Button>
 				<Button type="submit" :loading="submitting">{{ copy.submit }}</Button>
 			</div>
 		</form>

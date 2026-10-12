@@ -15,6 +15,7 @@ export const onboardingCopy = {
 		roles: ['Admin', 'Member', 'Guest'],
 		noteAfter: 'You can change them in settings at any time.',
 		submit: 'Continue',
+		cancel: 'Cancel',
 		failed: 'We could not create the workspace. Please check the form and try again.',
 	},
 	invite: {
