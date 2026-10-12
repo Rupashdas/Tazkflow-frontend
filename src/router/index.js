@@ -3,6 +3,9 @@ import { authGuard } from './guards'
 
 export const router = createRouter({
 	history: createWebHistory(),
+	// Every new top-level path must also be added to RESERVED_SLUGS in
+	// tazkflow-backend/app/Models/Workspace.php. Otherwise a workspace with that
+	// slug is caught by the fixed route and can never be opened at /:workspace.
 	routes: [
 		{
 			path: '/login',

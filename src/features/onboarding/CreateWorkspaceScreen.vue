@@ -73,7 +73,9 @@ async function submit() {
 		await ensureCsrfCookie()
 		const { data } = await api.post('/api/workspaces', {
 			name: name.value,
-			slug: slug.value || undefined,
+			// A URL that still follows the name is left to the API, which adds
+			// "-2" when it is taken or reserved instead of rejecting it.
+			slug: slugTouched.value ? slug.value : undefined,
 		})
 
 		// The switcher's list is now out of date.
