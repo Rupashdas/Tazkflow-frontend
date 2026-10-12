@@ -68,8 +68,20 @@ export function setWorkspaceErrorHandler(fn) {
 	onWorkspaceError = fn
 }
 
-api.interceptors.response.use(undefined, (error) => {
+api.interceptors.response.use(undefined, async (error) => {
 	const status = error.response?.status
+	const config = error.config
+
+	// 419: the XSRF token no longer matches a session, usually because the
+	// session expired while the tab sat idle. Fetch a fresh token and send the
+	// request once more. If the session is really gone, the retry comes back
+	// 401 and the branch below signs the person out. The mark stops a loop.
+	if (status === 419 && config && !config._csrfRetried) {
+		config._csrfRetried = true
+		csrfReady = false
+		await ensureCsrfCookie()
+		return api(config)
+	}
 
 	// 401: the session is gone. 403 account_deactivated: the whole account was
 	// switched off mid-session. Both mean the same thing here: out.
