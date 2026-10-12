@@ -69,6 +69,11 @@ export const useAuthStore = defineStore('auth', () => {
 	 * device, even when the server cannot be reached, answers 419 or fails.
 	 */
 	async function logout() {
+		// Forget the session here first. The server may have ended it already
+		// (a password reset does), and a 401 from this call must not look like
+		// "your session ended mid-use" and redirect to /login?next=…
+		endSession()
+
 		try {
 			// No CSRF fetch: signing in already left a fresh XSRF cookie behind.
 			await api.post('/api/logout')
@@ -76,7 +81,6 @@ export const useAuthStore = defineStore('auth', () => {
 			// The server session may outlive this, but the screen must not keep
 			// showing the account to whoever uses this device next.
 		}
-		endSession()
 	}
 
 	return { user, checked, unreachable, isLoggedIn, setUser, fetchUser, login, logout, endSession }
