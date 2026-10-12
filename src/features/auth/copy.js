@@ -63,8 +63,20 @@ export const authCopy = {
 		signOut: 'Sign out',
 	},
 	verified: {
-		title: 'Email confirmed',
-		subtitle: 'Thanks — your email address is confirmed.',
-		continue: 'Continue',
+		confirmed: {
+			title: 'Email confirmed',
+			subtitle: 'Thanks — your email address is confirmed.',
+			action: 'Continue',
+		},
+		linkInvalid: {
+			title: 'This link no longer works',
+			subtitle: 'It may have expired, or a newer link was sent after it. Ask for a new one and use the latest email.',
+			action: 'Send a new link',
+		},
+		emailTaken: {
+			title: 'That address is already in use',
+			subtitle: 'Another account signed up with it before you confirmed. Your email address was not changed.',
+			action: 'Continue',
+		},
 	},
 }
