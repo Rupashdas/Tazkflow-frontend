@@ -10,6 +10,7 @@ export const onboardingCopy = {
 		nameHint: 'Your company or team name.',
 		slug: 'Workspace URL',
 		slugHint: 'Lower-case letters, numbers and hyphens. 3 to 60 characters.',
+		slugAuto: 'We’ll make a URL from the name in Latin letters. You can also type your own.',
 		note: 'You will be the owner of this workspace. Three roles are ready to use:',
 		roles: ['Admin', 'Member', 'Guest'],
 		noteAfter: 'You can change them in settings at any time.',

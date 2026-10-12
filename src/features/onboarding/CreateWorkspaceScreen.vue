@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { Info } from 'lucide-vue-next'
 import WizardLayout from '@/layouts/WizardLayout.vue'
@@ -15,6 +15,10 @@ const router = useRouter()
 const name = ref('')
 const slug = ref('')
 const slugTouched = ref(false)
+
+// A name in another script ("আমার দল") leaves nothing a-z to build from here,
+// but the API transliterates it ("amar-dl"). Say so instead of an empty field.
+const slugFromServer = computed(() => !slugTouched.value && slug.value === '' && name.value.trim() !== '')
 const errors = ref({})
 const formError = ref('')
 const submitting = ref(false)
@@ -124,6 +128,7 @@ async function submit() {
 					/>
 				</div>
 				<p v-if="errors.slug" class="mt-2 text-[14px] text-danger-text">{{ errors.slug }}</p>
+				<p v-else-if="slugFromServer" class="mt-2 text-[14px] text-muted" role="status">{{ copy.slugAuto }}</p>
 				<p v-else class="mt-2 text-[14px] text-muted">{{ copy.slugHint }}</p>
 			</div>
 
