@@ -28,8 +28,9 @@ export const router = createRouter({
 		{
 			path: '/reset-password',
 			name: 'reset-password',
+			// Open to everyone: the emailed link may be opened where someone is
+			// still signed in. The screen signs them out once the reset succeeds.
 			component: () => import('@/features/auth/ResetPasswordScreen.vue'),
-			meta: { guestOnly: true },
 		},
 		{
 			path: '/verify-email',

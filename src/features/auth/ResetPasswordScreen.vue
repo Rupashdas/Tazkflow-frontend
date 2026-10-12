@@ -5,10 +5,12 @@ import AuthLayout from '@/layouts/AuthLayout.vue'
 import Button from '@/ui/Button.vue'
 import TextField from '@/ui/TextField.vue'
 import { api, ensureCsrfCookie, fieldErrors, errorMessage } from '@/lib/api'
+import { useAuthStore } from '@/stores/useAuthStore'
 import { authCopy } from './copy'
 
 const copy = authCopy.reset
 const route = useRoute()
+const auth = useAuthStore()
 
 // The emailed link carries both of these. Without them there is nothing to do.
 const token = typeof route.query.token === 'string' ? route.query.token : ''
@@ -36,6 +38,11 @@ async function submit() {
 			password: password.value,
 			password_confirmation: passwordConfirmation.value,
 		})
+
+		// Only now, with a valid token used, does anyone get signed out: the new
+		// password should be what lets them back in, and a link for another
+		// account must not leave the previous person signed in on this device.
+		if (auth.isLoggedIn) await auth.logout()
 		done.value = true
 	} catch (error) {
 		errors.value = fieldErrors(error)
