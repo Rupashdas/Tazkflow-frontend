@@ -30,7 +30,18 @@ setUnauthorizedHandler(() => {
 // The workspace in the URL is gone, or access to it was switched off. Leaving
 // the reason in the URL lets the next screen explain it.
 setWorkspaceErrorHandler((code) => {
-	useWorkspaceStore().clear()
+	const workspace = useWorkspaceStore()
+
+	// The cache still says this person is a member: the list would offer the
+	// workspace again and "Open" would loop back here. Read the slug before
+	// clear() forgets it.
+	queryClient.removeQueries({ queryKey: ['workspace', workspace.slug] })
+	// Drop it from the cached list now, so the list never shows it while the
+	// fresh copy is on its way; the refetch then confirms the rest.
+	queryClient.setQueryData(['workspaces'], (list) => list?.filter((item) => item.slug !== workspace.slug))
+	queryClient.invalidateQueries({ queryKey: ['workspaces'] })
+
+	workspace.clear()
 	router.replace({ path: '/workspaces', query: { issue: code } })
 })
 
