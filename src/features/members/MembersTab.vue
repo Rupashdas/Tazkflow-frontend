@@ -1,16 +1,27 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { Search, SearchX } from 'lucide-vue-next'
 import Avatar from '@/ui/Avatar.vue'
 import Button from '@/ui/Button.vue'
+import SelectField from '@/ui/SelectField.vue'
+import { api, endsSession, errorMessage } from '@/lib/api'
 import { fill } from '@/lib/fill'
 import { formatDate } from '@/lib/intl'
+import { toast } from '@/lib/toast'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
+import { useCan } from '@/features/workspaces/useCan'
+import { useRoles } from '@/features/roles/queries'
 import { useMembers } from './queries'
 import { membersCopy } from './copy'
 
 const copy = membersCopy.list
 const auth = useAuthStore()
+const workspace = useWorkspaceStore()
+const queryClient = useQueryClient()
+const { can } = useCan()
+const { data: roles } = useRoles()
 
 const search = ref('')
 const searched = ref('')
@@ -36,6 +47,42 @@ const { data, isPending, isError, refetch, hasNextPage, fetchNextPage, isFetchin
 const members = computed(() => data.value?.pages.flatMap((page) => page.data) ?? [])
 
 const joined = (member) => copy.joined.replace('{date}', formatDate(member.joined_at, auth.user.preferences))
+
+/**
+ * The API's rule, checked here so nobody is offered what it will refuse: a
+ * role may only be given or taken away by someone who can do everything it
+ * allows. A role we cannot see (no roles.view) counts as out of reach.
+ */
+function grantable(roleRef) {
+	if (!roleRef) return true
+	const role = roles.value?.find((item) => item.id === roleRef.id)
+	return Boolean(role) && role.capabilities.every(can)
+}
+
+const roleOptions = computed(() =>
+	(roles.value ?? []).filter((role) => role.capabilities.every(can)).map((role) => ({ value: String(role.id), label: role.label })),
+)
+
+/** Whether the role and the row's other controls are offered for this person. */
+const manageable = (member) =>
+	can('members.manage') && !member.is_owner && member.id !== auth.user.id && grantable(member.role)
+
+const {
+	mutate: changeRole,
+	isPending: changingRole,
+	variables: roleChange,
+} = useMutation({
+	mutationFn: ({ member, roleId }) => api.patch(`/api/members/${member.id}/role`, { role_id: Number(roleId) }),
+	onSuccess: ({ data }) => toast(fill(copy.roleChanged, { name: data.data.name, role: data.data.role.label })),
+	onError: (error) => {
+		if (!endsSession(error)) toast(errorMessage(error, copy.roleFailed), 'error')
+	},
+	onSettled: () => {
+		queryClient.invalidateQueries({ queryKey: ['workspace', workspace.slug, 'members'] })
+		// Each role shows how many hold it.
+		queryClient.invalidateQueries({ queryKey: ['workspace', workspace.slug, 'roles'] })
+	},
+})
 </script>
 
 <template>
@@ -92,7 +139,18 @@ const joined = (member) => copy.joined.replace('{date}', formatDate(member.joine
 					<p class="truncate text-[14px] text-muted">{{ member.email }}</p>
 				</div>
 
-				<span class="w-[180px] shrink-0 truncate text-[15px] text-secondary">{{ member.role?.label ?? copy.noRole }}</span>
+				<div class="w-[180px] shrink-0">
+					<SelectField
+						v-if="manageable(member)"
+						:model-value="String(member.role?.id ?? '')"
+						:options="roleOptions"
+						:aria-label="fill(copy.roleLabel, { name: member.name })"
+						:disabled="changingRole && roleChange?.member.id === member.id"
+						class="w-full"
+						@update:model-value="(roleId) => changeRole({ member, roleId })"
+					/>
+					<span v-else class="block truncate text-[15px] text-secondary">{{ member.role?.label ?? copy.noRole }}</span>
+				</div>
 
 				<!-- The word, not just the colour, says which state it is. -->
 				<span class="w-[120px] shrink-0">

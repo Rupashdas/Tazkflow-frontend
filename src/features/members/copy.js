@@ -18,5 +18,8 @@ export const membersCopy = {
 		noMatchBody: 'Check the spelling, or try just part of a name or an email address.',
 		clearSearch: 'Clear search',
 		loadMore: 'Load more',
+		roleLabel: 'Role for {name}',
+		roleChanged: '{name} is now {role}.',
+		roleFailed: 'We could not change the role. Please try again.',
 	},
 }

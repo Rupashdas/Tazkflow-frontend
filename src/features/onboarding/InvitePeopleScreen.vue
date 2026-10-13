@@ -1,22 +1,12 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import {
-	SelectContent,
-	SelectIcon,
-	SelectItem,
-	SelectItemText,
-	SelectPortal,
-	SelectRoot,
-	SelectTrigger,
-	SelectValue,
-	SelectViewport,
-} from 'reka-ui'
-import { Check, ChevronDown, Plus, X } from 'lucide-vue-next'
+import { Plus, X } from 'lucide-vue-next'
 import WizardLayout from '@/layouts/WizardLayout.vue'
 import Button from '@/ui/Button.vue'
+import SelectField from '@/ui/SelectField.vue'
 import { api, endsSession, ensureCsrfCookie, fieldErrors, errorMessage } from '@/lib/api'
-import { useRoles } from '@/features/workspaces/queries'
+import { useRoles } from '@/features/roles/queries'
 import { fill } from '@/lib/fill'
 import { onboardingCopy } from './copy'
 
@@ -33,6 +23,10 @@ const rolesProblem = computed(() => {
 	if (!rolesError.value) return ''
 	return rolesError.value.response?.status === 403 ? copy.noPermission : copy.rolesFailed
 })
+
+const roleOptions = computed(() =>
+	(roles.value ?? []).map((role) => ({ value: String(role.id), label: role.label, hint: copy.roleHints[role.name] })),
+)
 
 const rows = ref([
 	{ email: '', roleId: '', error: '' },
@@ -148,48 +142,12 @@ async function send() {
 						@paste="onPaste($event, index)"
 					/>
 
-					<!-- The only role picker in Plan A. Plan B's settings are its second
-					     user, and it moves into ui/SelectField.vue then. -->
-					<SelectRoot v-model="row.roleId">
-						<SelectTrigger
-							:aria-label="copy.roleLabel"
-							class="flex h-[50px] w-[184px] items-center gap-2.5 rounded-control border border-border-strong bg-surface px-4 text-[16px] text-text max-md:w-full"
-						>
-							<SelectValue class="flex-1 truncate text-left" />
-							<SelectIcon>
-								<ChevronDown class="size-4 text-icon-muted" aria-hidden="true" />
-							</SelectIcon>
-						</SelectTrigger>
-
-						<SelectPortal>
-							<SelectContent
-								position="popper"
-								:side-offset="6"
-								class="z-50 w-[var(--reka-select-trigger-width)] min-w-[240px] rounded-card border border-border bg-surface p-2 shadow-popover"
-							>
-								<SelectViewport>
-									<SelectItem
-										v-for="role in roles ?? []"
-										:key="role.id"
-										:value="String(role.id)"
-										class="flex cursor-pointer items-start gap-2 rounded-nav px-3.5 py-3 outline-none data-highlighted:bg-surface-subtle data-[state=checked]:bg-accent-soft"
-									>
-										<span class="min-w-0 flex-1">
-											<SelectItemText class="block text-[15px] font-semibold text-text">{{ role.label }}</SelectItemText>
-											<span v-if="copy.roleHints[role.name]" class="mt-0.5 block text-[14px] text-muted">
-												{{ copy.roleHints[role.name] }}
-											</span>
-										</span>
-										<Check
-											v-if="String(role.id) === row.roleId"
-											class="mt-0.5 size-4 shrink-0 text-accent-soft-text"
-											aria-hidden="true"
-										/>
-									</SelectItem>
-								</SelectViewport>
-							</SelectContent>
-						</SelectPortal>
-					</SelectRoot>
+					<SelectField
+						v-model="row.roleId"
+						:options="roleOptions"
+						:aria-label="copy.roleLabel"
+						class="w-[184px] max-md:w-full"
+					/>
 
 					<button
 						v-if="rows.length > 1"

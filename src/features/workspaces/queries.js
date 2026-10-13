@@ -32,18 +32,3 @@ export function useCurrentWorkspace() {
 		},
 	})
 }
-
-/** The roles this workspace offers. Needs roles.view, which Admin and the owner hold. */
-export function useRoles() {
-	const workspace = useWorkspaceStore()
-	const slug = computed(() => workspace.slug)
-
-	return useQuery({
-		queryKey: ['workspace', slug, 'roles'],
-		enabled: computed(() => slug.value !== null),
-		queryFn: async () => {
-			const { data } = await api.get('/api/roles')
-			return data.data
-		},
-	})
-}
