@@ -21,5 +21,11 @@ export const membersCopy = {
 		roleLabel: 'Role for {name}',
 		roleChanged: '{name} is now {role}.',
 		roleFailed: 'We could not change the role. Please try again.',
+		actions: 'Actions for {name}',
+		deactivate: 'Deactivate',
+		activate: 'Activate',
+		nowDeactivated: '{name} can no longer open this workspace.',
+		nowActivated: '{name} can open this workspace again.',
+		toggleFailed: 'We could not change their access. Please try again.',
 	},
 }

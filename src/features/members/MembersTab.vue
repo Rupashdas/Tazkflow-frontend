@@ -1,7 +1,8 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import { Search, SearchX } from 'lucide-vue-next'
+import { MoreHorizontal, Search, SearchX } from 'lucide-vue-next'
+import { DropdownMenuContent, DropdownMenuItem, DropdownMenuPortal, DropdownMenuRoot, DropdownMenuTrigger } from 'reka-ui'
 import Avatar from '@/ui/Avatar.vue'
 import Button from '@/ui/Button.vue'
 import SelectField from '@/ui/SelectField.vue'
@@ -67,6 +68,8 @@ const roleOptions = computed(() =>
 const manageable = (member) =>
 	can('members.manage') && !member.is_owner && member.id !== auth.user.id && grantable(member.role)
 
+const membersKey = () => ['workspace', workspace.slug, 'members']
+
 const {
 	mutate: changeRole,
 	isPending: changingRole,
@@ -78,10 +81,42 @@ const {
 		if (!endsSession(error)) toast(errorMessage(error, copy.roleFailed), 'error')
 	},
 	onSettled: () => {
-		queryClient.invalidateQueries({ queryKey: ['workspace', workspace.slug, 'members'] })
+		queryClient.invalidateQueries({ queryKey: membersKey() })
 		// Each role shows how many hold it.
 		queryClient.invalidateQueries({ queryKey: ['workspace', workspace.slug, 'roles'] })
 	},
+})
+
+/** Flip one member's is_active in every cached page of every search. */
+function flipActive(memberId) {
+	queryClient.setQueriesData(
+		{ queryKey: membersKey() },
+		(data) =>
+			data && {
+				...data,
+				pages: data.pages.map((page) => ({
+					...page,
+					data: page.data.map((item) => (item.id === memberId ? { ...item, is_active: !item.is_active } : item)),
+				})),
+			},
+	)
+}
+
+const { mutate: toggleActive } = useMutation({
+	mutationFn: (member) => api.patch(`/api/members/${member.id}/active`),
+	// Optimistic: the row changes now. Keep what was there to put back on failure.
+	onMutate: async (member) => {
+		await queryClient.cancelQueries({ queryKey: membersKey() })
+		const before = queryClient.getQueriesData({ queryKey: membersKey() })
+		flipActive(member.id)
+		return { before }
+	},
+	onSuccess: ({ data }) => toast(fill(data.data.is_active ? copy.nowActivated : copy.nowDeactivated, { name: data.data.name })),
+	onError: (error, member, context) => {
+		for (const [key, value] of context?.before ?? []) queryClient.setQueryData(key, value)
+		if (!endsSession(error)) toast(errorMessage(error, copy.toggleFailed), 'error')
+	},
+	onSettled: () => queryClient.invalidateQueries({ queryKey: membersKey() }),
 })
 </script>
 
@@ -163,6 +198,31 @@ const {
 				</span>
 
 				<span class="w-[150px] shrink-0 text-[14px] text-muted">{{ joined(member) }}</span>
+
+				<div class="flex w-11 shrink-0 justify-end">
+					<DropdownMenuRoot v-if="manageable(member)">
+						<DropdownMenuTrigger
+							:aria-label="fill(copy.actions, { name: member.name })"
+							class="flex size-10 items-center justify-center rounded-control text-icon-muted hover:bg-surface-subtle hover:text-text"
+						>
+							<MoreHorizontal class="size-5" aria-hidden="true" />
+						</DropdownMenuTrigger>
+						<DropdownMenuPortal>
+							<DropdownMenuContent
+								align="end"
+								:side-offset="6"
+								class="z-50 w-[200px] rounded-card border border-border bg-surface p-2 shadow-popover"
+							>
+								<DropdownMenuItem
+									class="cursor-pointer rounded-nav px-3 py-2.5 text-[15px] text-text outline-none data-highlighted:bg-surface-subtle"
+									@select="toggleActive(member)"
+								>
+									{{ member.is_active ? copy.deactivate : copy.activate }}
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenuPortal>
+					</DropdownMenuRoot>
+				</div>
 			</li>
 		</ul>
 
