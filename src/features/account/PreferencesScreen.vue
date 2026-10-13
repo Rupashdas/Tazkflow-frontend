@@ -1,7 +1,19 @@
 <script setup>
-import { ref } from 'vue'
-import { RadioGroupItem, RadioGroupRoot } from 'reka-ui'
-import { Check, Monitor, Moon, Sun } from 'lucide-vue-next'
+import { computed, ref } from 'vue'
+import {
+	ComboboxAnchor,
+	ComboboxContent,
+	ComboboxEmpty,
+	ComboboxInput,
+	ComboboxItem,
+	ComboboxPortal,
+	ComboboxRoot,
+	ComboboxTrigger,
+	ComboboxViewport,
+	RadioGroupItem,
+	RadioGroupRoot,
+} from 'reka-ui'
+import { Check, ChevronDown, Monitor, Moon, Sun } from 'lucide-vue-next'
 import { api, endsSession } from '@/lib/api'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { ACCENTS } from '@/lib/theme'
@@ -53,6 +65,18 @@ const swatch = {
 	amber: 'bg-swatch-amber',
 	rose: 'bg-swatch-rose',
 }
+
+const timezones = Intl.supportedValuesOf('timeZone')
+const timezoneQuery = ref('')
+
+// "new york" finds America/New_York: compare without the underscores and slashes.
+const matchingTimezones = computed(() => {
+	const words = timezoneQuery.value.toLowerCase().replace(/[_/]/g, ' ').trim()
+	if (words === '') return timezones
+	return timezones.filter((zone) => zone.toLowerCase().replace(/[_/]/g, ' ').includes(words))
+})
+
+const zoneLabel = (zone) => zone?.replaceAll('_', ' ') ?? ''
 </script>
 
 <template>
@@ -131,6 +155,61 @@ const swatch = {
 						/>
 					</RadioGroupItem>
 				</RadioGroupRoot>
+			</div>
+
+			<div class="flex items-center justify-between gap-6 p-6 max-md:flex-col max-md:items-start">
+				<div>
+					<p id="timezone-label" class="text-[15px] font-semibold text-text">{{ copy.timezone }}</p>
+					<p class="mt-1 text-[14px] text-muted">{{ copy.timezoneHint }}</p>
+				</div>
+
+				<ComboboxRoot
+					:model-value="auth.user.preferences.timezone"
+					ignore-filter
+					@update:open="(isOpen) => isOpen && (timezoneQuery = '')"
+					class="w-[300px] shrink-0 max-md:w-full"
+					@update:model-value="(zone) => zone && save({ timezone: zone })"
+				>
+					<ComboboxAnchor
+						class="flex h-[50px] items-center rounded-control border border-border-strong bg-surface px-4"
+					>
+						<ComboboxInput
+							v-model="timezoneQuery"
+							:display-value="zoneLabel"
+							:placeholder="copy.timezoneSearch"
+							aria-labelledby="timezone-label"
+							class="min-w-0 flex-1 bg-transparent text-[16px] text-text outline-none placeholder:text-muted"
+						/>
+						<ComboboxTrigger :aria-label="copy.timezoneSearch">
+							<ChevronDown class="size-4 text-icon-muted" aria-hidden="true" />
+						</ComboboxTrigger>
+					</ComboboxAnchor>
+
+					<ComboboxPortal>
+						<ComboboxContent
+							position="popper"
+							:side-offset="6"
+							class="z-50 max-h-[320px] w-[var(--reka-combobox-trigger-width)] overflow-hidden rounded-card border border-border bg-surface p-2 shadow-popover"
+						>
+							<ComboboxViewport class="max-h-[300px] overflow-y-auto">
+								<ComboboxEmpty class="px-3 py-2.5 text-[14px] text-muted">{{ copy.timezoneNone }}</ComboboxEmpty>
+								<ComboboxItem
+									v-for="zone in matchingTimezones"
+									:key="zone"
+									:value="zone"
+									class="flex cursor-pointer items-center gap-2 rounded-nav px-3 py-2.5 text-[15px] text-text outline-none data-highlighted:bg-surface-subtle data-[state=checked]:font-semibold"
+								>
+									<span class="flex-1 truncate">{{ zoneLabel(zone) }}</span>
+									<Check
+										v-if="zone === auth.user.preferences.timezone"
+										class="size-4 shrink-0 text-accent-text"
+										aria-hidden="true"
+									/>
+								</ComboboxItem>
+							</ComboboxViewport>
+						</ComboboxContent>
+					</ComboboxPortal>
+				</ComboboxRoot>
 			</div>
 		</div>
 	</div>

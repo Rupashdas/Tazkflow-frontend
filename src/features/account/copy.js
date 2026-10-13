@@ -12,5 +12,9 @@ export const accountCopy = {
 		accent: 'Accent colour',
 		accentHint: 'Used for buttons, links and the selected item.',
 		accents: { blue: 'Blue', violet: 'Violet', emerald: 'Emerald', amber: 'Amber', rose: 'Rose' },
+		timezone: 'Timezone',
+		timezoneHint: 'Due dates and times are shown in this timezone.',
+		timezoneSearch: 'Search timezones',
+		timezoneNone: 'No timezone matches that.',
 	},
 }
