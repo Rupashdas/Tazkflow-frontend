@@ -45,7 +45,10 @@ const groups = computed(() =>
 
 <template>
 	<div class="flex min-h-screen">
-		<nav :aria-label="copy.navLabel" class="w-[240px] shrink-0 border-r border-border px-4 py-10">
+		<nav
+			:aria-label="copy.navLabel"
+			class="sticky top-0 h-screen w-[240px] shrink-0 self-start overflow-y-auto border-r border-border px-4 py-10"
+		>
 			<div
 				v-for="(group, index) in groups"
 				:key="group.label"

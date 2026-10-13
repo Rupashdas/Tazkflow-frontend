@@ -32,7 +32,9 @@ async function signOut() {
 	<div class="flex min-h-screen bg-page">
 		<!-- 272px on desktop; the mobile drawer arrives in Plan B, so below
 		     1024px it narrows rather than disappearing. -->
-		<aside class="flex w-[272px] shrink-0 flex-col gap-6 border-r border-border bg-surface p-5 max-lg:w-[216px]">
+		<aside
+			class="sticky top-0 flex h-screen w-[272px] shrink-0 flex-col gap-6 self-start overflow-y-auto border-r border-border bg-surface p-5 max-lg:w-[216px]"
+		>
 			<WorkspaceSwitcher />
 
 			<nav class="flex flex-col gap-1">
