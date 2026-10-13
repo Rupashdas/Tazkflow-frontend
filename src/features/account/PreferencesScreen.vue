@@ -55,8 +55,12 @@ async function save(changes) {
 	}
 }
 
-const appearances = ['light', 'dark', 'os']
 const appearanceIcons = { light: Sun, dark: Moon, os: Monitor }
+const appearances = ['light', 'dark', 'os'].map((value) => ({
+	value,
+	label: copy.appearances[value],
+	icon: appearanceIcons[value],
+}))
 
 // Full class names, so Tailwind finds them when it scans this file.
 const swatch = {
@@ -110,23 +114,12 @@ const timeFormats = ['12', '24'].map((value) => ({ value, label: copy.timeFormat
 					<p class="mt-1 text-[14px] text-muted">{{ copy.appearanceHint }}</p>
 				</div>
 
-				<RadioGroupRoot
+				<SegmentedControl
 					:model-value="auth.user.preferences.appearance"
-					aria-labelledby="appearance-label"
-					orientation="horizontal"
-					class="flex shrink-0 gap-2.5"
+					:options="appearances"
+					labelled-by="appearance-label"
 					@update:model-value="save({ appearance: $event })"
-				>
-					<RadioGroupItem
-						v-for="value in appearances"
-						:key="value"
-						:value="value"
-						class="flex h-11 items-center gap-2 rounded-control border-2 border-border px-4 text-[15px] text-secondary data-[state=checked]:border-accent data-[state=checked]:font-semibold data-[state=checked]:text-text"
-					>
-						<component :is="appearanceIcons[value]" class="size-[18px]" aria-hidden="true" />
-						{{ copy.appearances[value] }}
-					</RadioGroupItem>
-				</RadioGroupRoot>
+				/>
 			</div>
 
 			<div class="flex items-center justify-between gap-6 p-6 max-md:flex-col max-md:items-start">

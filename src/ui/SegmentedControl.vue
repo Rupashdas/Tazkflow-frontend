@@ -4,7 +4,7 @@ import { RadioGroupItem, RadioGroupRoot } from 'reka-ui'
 /** A few mutually exclusive choices side by side. Arrow keys move between them. */
 defineProps({
 	modelValue: { type: String, default: '' },
-	options: { type: Array, required: true }, // [{ value, label }]
+	options: { type: Array, required: true }, // [{ value, label, icon? }]
 	labelledBy: { type: String, required: true },
 })
 
@@ -16,15 +16,16 @@ defineEmits(['update:modelValue'])
 		:model-value="modelValue"
 		:aria-labelledby="labelledBy"
 		orientation="horizontal"
-		class="flex shrink-0 rounded-control border border-border-strong bg-surface-subtle p-1"
+		class="flex shrink-0 gap-2.5"
 		@update:model-value="$emit('update:modelValue', $event)"
 	>
 		<RadioGroupItem
 			v-for="option in options"
 			:key="option.value"
 			:value="option.value"
-			class="h-10 rounded-[6px] px-4 text-[15px] text-secondary data-[state=checked]:bg-surface data-[state=checked]:font-semibold data-[state=checked]:text-text data-[state=checked]:shadow-card"
+			class="flex h-11 items-center gap-2 rounded-control border-2 border-border px-4 text-[15px] text-secondary data-[state=checked]:border-accent data-[state=checked]:font-semibold data-[state=checked]:text-text"
 		>
+			<component :is="option.icon" v-if="option.icon" class="size-[18px]" aria-hidden="true" />
 			{{ option.label }}
 		</RadioGroupItem>
 	</RadioGroupRoot>
