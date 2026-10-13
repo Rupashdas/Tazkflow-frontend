@@ -5,5 +5,7 @@ export const layoutCopy = {
 		profile: 'Profile',
 		security: 'Email & password',
 		preferences: 'Preferences',
+		workspace: 'Workspace',
+		members: 'Members',
 	},
 }

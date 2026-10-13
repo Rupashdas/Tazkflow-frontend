@@ -68,6 +68,12 @@ async function signOut() {
 						</DropdownMenuItem>
 						<DropdownMenuItem
 							class="cursor-pointer rounded-nav px-3 py-2.5 text-[15px] text-text outline-none data-highlighted:bg-surface-subtle"
+							@select="router.push(`/${workspace.slug}/settings`)"
+						>
+							{{ copy.workspaceSettings }}
+						</DropdownMenuItem>
+						<DropdownMenuItem
+							class="cursor-pointer rounded-nav px-3 py-2.5 text-[15px] text-text outline-none data-highlighted:bg-surface-subtle"
 							@select="signOut"
 						>
 							{{ copy.signOut }}

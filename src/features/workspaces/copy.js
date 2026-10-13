@@ -7,6 +7,7 @@ export const workspaceCopy = {
 	shell: {
 		home: 'Home',
 		accountSettings: 'Account settings',
+		workspaceSettings: 'Workspace settings',
 		signOut: 'Sign out',
 	},
 	switcher: {

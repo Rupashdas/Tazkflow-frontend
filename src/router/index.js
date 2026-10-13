@@ -104,6 +104,20 @@ export const router = createRouter({
 						},
 					],
 				},
+				{
+					path: 'settings',
+					component: () => import('@/layouts/SettingsLayout.vue'),
+					children: [
+						{ path: '', redirect: (to) => ({ name: 'settings-members', params: to.params }) },
+						{
+							path: 'members',
+							name: 'settings-members',
+							component: () => import('@/features/members/MembersScreen.vue'),
+							// SettingsLayout reads this to hide the nav item and refuse the page.
+							meta: { capability: 'members.view' },
+						},
+					],
+				},
 			],
 		},
 		{

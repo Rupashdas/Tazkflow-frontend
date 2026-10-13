@@ -1,23 +1,33 @@
 <script setup>
 import { computed } from 'vue'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
+import { useCan } from '@/features/workspaces/useCan'
 import { layoutCopy } from './copy'
 
 const copy = layoutCopy.settings
 const workspace = useWorkspaceStore()
+const { can } = useCan()
 
-// One list drives the nav. Later groups (Workspace) are added here, and the
-// pages a person may not open are left out of it.
-const groups = computed(() => [
-	{
-		label: copy.myAccount,
-		items: [
-			{ to: `/${workspace.slug}/account/profile`, label: copy.profile },
-			{ to: `/${workspace.slug}/account/security`, label: copy.security },
-			{ to: `/${workspace.slug}/account/preferences`, label: copy.preferences },
-		],
-	},
-])
+// One list drives the nav. Pages a person may not open are left out, and a
+// group with nothing left in it is not shown at all.
+const groups = computed(() =>
+	[
+		{
+			label: copy.myAccount,
+			items: [
+				{ to: `/${workspace.slug}/account/profile`, label: copy.profile },
+				{ to: `/${workspace.slug}/account/security`, label: copy.security },
+				{ to: `/${workspace.slug}/account/preferences`, label: copy.preferences },
+			],
+		},
+		{
+			label: copy.workspace,
+			items: [{ to: `/${workspace.slug}/settings/members`, label: copy.members, capability: 'members.view' }],
+		},
+	]
+		.map((group) => ({ ...group, items: group.items.filter((item) => !item.capability || can(item.capability)) }))
+		.filter((group) => group.items.length > 0),
+)
 </script>
 
 <template>
