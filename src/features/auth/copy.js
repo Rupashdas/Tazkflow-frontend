@@ -84,5 +84,10 @@ export const authCopy = {
 			subtitle: 'Another account signed up with it before you confirmed. Your email address was not changed.',
 			action: 'Continue',
 		},
+		changed: {
+			title: 'Email changed',
+			subtitle: 'Your account now uses your new email address. Use it the next time you sign in.',
+			action: 'Continue',
+		},
 	},
 }

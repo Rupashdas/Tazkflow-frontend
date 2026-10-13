@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import Button from '@/ui/Button.vue'
@@ -14,8 +14,14 @@ const router = useRouter()
 // An unknown error is treated as a bad link: never claim success that did not happen.
 const outcome = computed(() => {
 	const error = route.query.error
-	if (!error) return 'confirmed'
-	return error === 'email_taken' ? 'emailTaken' : 'linkInvalid'
+	if (error) return error === 'email_taken' ? 'emailTaken' : 'linkInvalid'
+	return route.query.changed ? 'changed' : 'confirmed'
+})
+
+// The account in this tab still has the old address. Ask again, so the
+// sidebar and the security page show the new one straight away.
+onMounted(() => {
+	if (outcome.value === 'changed' && auth.isLoggedIn) auth.fetchUser()
 })
 
 const copy = computed(() => authCopy.verified[outcome.value])
