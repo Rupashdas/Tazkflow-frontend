@@ -107,8 +107,9 @@ async function submit() {
 			</div>
 			<div class="flex gap-3">
 				<input ref="fileInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" @change="upload" />
-				<Button variant="secondary" :loading="uploading" @click="fileInput.click()">{{ copy.upload }}</Button>
-				<Button v-if="auth.user.avatar" variant="ghost" :loading="removing" @click="removePhoto">
+				<!-- One at a time: whichever answer arrived last would decide the photo. -->
+				<Button variant="secondary" :loading="uploading" :disabled="removing" @click="fileInput.click()">{{ copy.upload }}</Button>
+				<Button v-if="auth.user.avatar" variant="ghost" :loading="removing" :disabled="uploading" @click="removePhoto">
 					{{ copy.removePhoto }}
 				</Button>
 			</div>
