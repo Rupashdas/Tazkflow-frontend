@@ -52,23 +52,28 @@ const members = computed(() => data.value?.pages.flatMap((page) => page.data) ??
 const joined = (member) => copy.joined.replace('{date}', formatDate(member.joined_at, auth.user.preferences))
 
 /**
- * The API's rule, checked here so nobody is offered what it will refuse: a
- * role may only be given or taken away by someone who can do everything it
- * allows. A role we cannot see (no roles.view) counts as out of reach.
+ * The API's rule, checked here so nobody is offered what it will refuse: no
+ * one acts on a person whose role allows more than they can do. Without
+ * roles.view the roles' capabilities are unknown, so nothing is held back and
+ * the API's own message explains a refusal.
  */
-function grantable(roleRef) {
-	if (!roleRef) return true
+function outranksMe(roleRef) {
+	if (!roleRef || !can('roles.view')) return false
+	// Not loaded yet: hold the controls back rather than show and then hide them.
 	const role = roles.value?.find((item) => item.id === roleRef.id)
-	return Boolean(role) && role.capabilities.every(can)
+	return !role || !role.capabilities.every(can)
 }
 
 const roleOptions = computed(() =>
 	(roles.value ?? []).filter((role) => role.capabilities.every(can)).map((role) => ({ value: String(role.id), label: role.label })),
 )
 
-/** Whether the role and the row's other controls are offered for this person. */
+/** Whether the row's actions (access, removal) are offered for this person. */
 const manageable = (member) =>
-	can('members.manage') && !member.is_owner && member.id !== auth.user.id && grantable(member.role)
+	can('members.manage') && !member.is_owner && member.id !== auth.user.id && !outranksMe(member.role)
+
+/** The role becomes a dropdown only when there is a role to pick. */
+const roleEditable = (member) => manageable(member) && roleOptions.value.length > 0
 
 const membersKey = () => ['workspace', workspace.slug, 'members']
 
@@ -89,8 +94,8 @@ const {
 	},
 })
 
-/** Flip one member's is_active in every cached page of every search. */
-function flipActive(memberId) {
+/** Set one member's is_active in every cached page of every search. */
+function setActive(memberId, isActive) {
 	queryClient.setQueriesData(
 		{ queryKey: membersKey() },
 		(data) =>
@@ -98,23 +103,25 @@ function flipActive(memberId) {
 				...data,
 				pages: data.pages.map((page) => ({
 					...page,
-					data: page.data.map((item) => (item.id === memberId ? { ...item, is_active: !item.is_active } : item)),
+					data: page.data.map((item) => (item.id === memberId ? { ...item, is_active: isActive } : item)),
 				})),
 			},
 	)
 }
 
-const { mutate: toggleActive } = useMutation({
-	mutationFn: (member) => api.patch(`/api/members/${member.id}/active`),
+// The value wanted is sent, not "flip it", so a second press or another
+// admin's press at the same moment cannot undo it.
+const { mutate: setAccess } = useMutation({
+	mutationFn: ({ member, isActive }) => api.patch(`/api/members/${member.id}/active`, { is_active: isActive }),
 	// Optimistic: the row changes now. Keep what was there to put back on failure.
-	onMutate: async (member) => {
+	onMutate: async ({ member, isActive }) => {
 		await queryClient.cancelQueries({ queryKey: membersKey() })
 		const before = queryClient.getQueriesData({ queryKey: membersKey() })
-		flipActive(member.id)
+		setActive(member.id, isActive)
 		return { before }
 	},
 	onSuccess: ({ data }) => toast(fill(data.data.is_active ? copy.nowActivated : copy.nowDeactivated, { name: data.data.name })),
-	onError: (error, member, context) => {
+	onError: (error, variables, context) => {
 		for (const [key, value] of context?.before ?? []) queryClient.setQueryData(key, value)
 		if (!endsSession(error)) toast(errorMessage(error, copy.toggleFailed), 'error')
 	},
@@ -128,7 +135,9 @@ const removeError = ref('')
 const removeOpen = computed({
 	get: () => removing.value !== null,
 	set: (open) => {
-		if (!open) removing.value = null
+		// Stays open until the answer comes, so the answer lands on this dialog
+		// and not on one opened for someone else meanwhile.
+		if (!open && !removingNow.value) removing.value = null
 	},
 })
 
@@ -137,15 +146,18 @@ function askRemove(member) {
 	removing.value = member
 }
 
+/** Whether the dialog still asks about this member. */
+const asksAbout = (member) => removing.value?.id === member.id
+
 const { mutate: remove, isPending: removingNow } = useMutation({
 	mutationFn: (member) => api.delete(`/api/members/${member.id}`),
 	onSuccess: (_, member) => {
 		toast(fill(copy.removed, { name: member.name }))
-		removing.value = null
+		if (asksAbout(member)) removing.value = null
 	},
-	onError: (error) => {
+	onError: (error, member) => {
 		// Shown in the dialog, which is still open, next to the button they pressed.
-		if (!endsSession(error)) removeError.value = errorMessage(error, copy.removeFailed)
+		if (!endsSession(error) && asksAbout(member)) removeError.value = errorMessage(error, copy.removeFailed)
 	},
 	onSettled: () => {
 		queryClient.invalidateQueries({ queryKey: membersKey() })
@@ -210,7 +222,7 @@ const { mutate: remove, isPending: removingNow } = useMutation({
 
 				<div class="w-[180px] shrink-0">
 					<SelectField
-						v-if="manageable(member)"
+						v-if="roleEditable(member)"
 						:model-value="String(member.role?.id ?? '')"
 						:options="roleOptions"
 						:aria-label="fill(copy.roleLabel, { name: member.name })"
@@ -249,7 +261,7 @@ const { mutate: remove, isPending: removingNow } = useMutation({
 							>
 								<DropdownMenuItem
 									class="cursor-pointer rounded-nav px-3 py-2.5 text-[15px] text-text outline-none data-highlighted:bg-surface-subtle"
-									@select="toggleActive(member)"
+									@select="setAccess({ member, isActive: !member.is_active })"
 								>
 									{{ member.is_active ? copy.deactivate : copy.activate }}
 								</DropdownMenuItem>
@@ -278,7 +290,7 @@ const { mutate: remove, isPending: removingNow } = useMutation({
 				{{ removeError }}
 			</p>
 			<div class="mt-7 flex justify-end gap-3">
-				<Button variant="secondary" @click="removeOpen = false">{{ copy.cancel }}</Button>
+				<Button variant="secondary" :disabled="removingNow" @click="removeOpen = false">{{ copy.cancel }}</Button>
 				<Button variant="danger" :loading="removingNow" @click="remove(removing)">{{ copy.removeConfirm }}</Button>
 			</div>
 		</Dialog>
