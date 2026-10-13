@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { Plus } from 'lucide-vue-next'
 import Button from '@/ui/Button.vue'
 import { useWorkspaces } from './queries'
-import { initials } from './initials'
+import { initials } from '@/lib/initials'
 import { workspaceCopy } from './copy'
 
 const copy = workspaceCopy.list

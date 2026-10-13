@@ -12,6 +12,7 @@ import { useAuthStore } from '@/stores/useAuthStore'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
 import { workspaceCopy } from '@/features/workspaces/copy'
 import WorkspaceSwitcher from '@/features/workspaces/WorkspaceSwitcher.vue'
+import Avatar from '@/ui/Avatar.vue'
 import Toaster from '@/ui/Toaster.vue'
 
 const copy = workspaceCopy.shell
@@ -45,7 +46,7 @@ async function signOut() {
 
 			<DropdownMenuRoot>
 				<DropdownMenuTrigger class="mt-auto flex w-full items-center gap-3 border-t border-divider pt-4 text-left">
-					<span class="size-9 shrink-0 rounded-full bg-surface-subtle" />
+					<Avatar :name="auth.user?.name ?? ''" :src="auth.user?.avatar" size="sm" />
 					<span class="min-w-0 flex-1">
 						<span class="block truncate text-[15px] font-semibold text-text">{{ auth.user?.name }}</span>
 						<span class="block truncate text-[14px] text-muted">{{ auth.user?.email }}</span>

@@ -12,7 +12,7 @@ import {
 } from 'reka-ui'
 import { ChevronsUpDown, Plus } from 'lucide-vue-next'
 import { useWorkspaces } from './queries'
-import { initials } from './initials'
+import { initials } from '@/lib/initials'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
 import { workspaceCopy } from './copy'
 

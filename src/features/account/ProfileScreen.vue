@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import Avatar from '@/ui/Avatar.vue'
 import Button from '@/ui/Button.vue'
 import TextField from '@/ui/TextField.vue'
 import { api, endsSession, errorMessage, fieldErrors } from '@/lib/api'
@@ -15,6 +16,39 @@ const jobTitle = ref(auth.user.title ?? '')
 const errors = ref({})
 const formError = ref('')
 const saving = ref(false)
+
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024 // the API's limit (max:5120 KB)
+const fileInput = ref(null)
+const photoError = ref('')
+const uploading = ref(false)
+
+async function upload(event) {
+	const file = event.target.files?.[0]
+	// Cleared now, so choosing the same file again still fires a change.
+	event.target.value = ''
+	if (!file) return
+
+	photoError.value = ''
+	// Checked here first: a 5 MB upload that the server then refuses is a long wait for nothing.
+	if (file.size > MAX_PHOTO_BYTES) {
+		photoError.value = copy.photoTooBig
+		return
+	}
+
+	uploading.value = true
+	try {
+		const form = new FormData()
+		form.append('avatar', file)
+		const { data } = await api.post('/api/user/avatar', form)
+		auth.setUser(data.data)
+		toast(copy.photoSaved)
+	} catch (error) {
+		if (endsSession(error)) return
+		photoError.value = fieldErrors(error).avatar ?? errorMessage(error, copy.photoFailed)
+	} finally {
+		uploading.value = false
+	}
+}
 
 async function submit() {
 	saving.value = true
@@ -46,7 +80,21 @@ async function submit() {
 		<h1 class="mt-2.5 text-[28px] font-bold tracking-[-0.02em] text-text">{{ copy.title }}</h1>
 		<p class="mt-2 text-secondary">{{ copy.subtitle }}</p>
 
-		<form class="mt-8 rounded-card border border-border bg-surface p-7 shadow-card max-md:p-5" @submit.prevent="submit">
+		<section class="mt-8 flex items-center gap-6 rounded-card border border-border bg-surface p-7 shadow-card max-md:flex-col max-md:items-start max-md:p-5">
+			<Avatar :name="auth.user.name" :src="auth.user.avatar" size="lg" />
+			<div class="min-w-0 flex-1">
+				<p class="text-[15px] font-semibold text-text">{{ copy.photo }}</p>
+				<p class="mt-1 text-[14px]" :class="photoError ? 'text-danger-text' : 'text-muted'" :role="photoError ? 'alert' : undefined">
+					{{ photoError || copy.photoHint }}
+				</p>
+			</div>
+			<div class="flex gap-3">
+				<input ref="fileInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" @change="upload" />
+				<Button variant="secondary" :loading="uploading" @click="fileInput.click()">{{ copy.upload }}</Button>
+			</div>
+		</section>
+
+		<form class="mt-6 rounded-card border border-border bg-surface p-7 shadow-card max-md:p-5" @submit.prevent="submit">
 			<p v-if="formError" class="mb-6 rounded-control bg-danger-soft px-4 py-3 text-[14px] text-danger-text" role="alert">
 				{{ formError }}
 			</p>

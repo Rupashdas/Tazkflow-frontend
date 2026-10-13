@@ -9,6 +9,12 @@ export const accountCopy = {
 		save: 'Save changes',
 		saved: 'Profile saved.',
 		failed: 'We could not save your profile. Please try again.',
+		photo: 'Photo',
+		upload: 'Upload photo',
+		photoHint: 'JPG, PNG or WebP, up to 5 MB.',
+		photoTooBig: 'That file is larger than 5 MB. Choose a smaller one.',
+		photoSaved: 'Photo updated.',
+		photoFailed: 'We could not upload that photo. Please try another one.',
 	},
 	preferences: {
 		overline: 'My account',
