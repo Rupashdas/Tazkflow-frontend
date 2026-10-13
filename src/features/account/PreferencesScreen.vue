@@ -50,7 +50,10 @@ async function save(changes) {
 		status.value = 'saved'
 	} catch (error) {
 		if (endsSession(error) || request !== latest) return
-		show(lastSaved)
+		// Only the fields this request sent go back. Another field changed a
+		// moment earlier may still be on its way and must keep its new value.
+		const reverted = Object.fromEntries(Object.keys(changes).map((key) => [key, lastSaved[key]]))
+		show({ ...auth.user.preferences, ...reverted })
 		status.value = 'failed'
 	}
 }
@@ -71,7 +74,12 @@ const swatch = {
 	rose: 'bg-swatch-rose',
 }
 
-const timezones = Intl.supportedValuesOf('timeZone')
+// The browser's list leaves out UTC (the server's default), and a zone saved
+// elsewhere may use a newer name than this browser knows (Asia/Kolkata for
+// Asia/Calcutta). Both are added, so the saved value is always in the list.
+const timezones = [
+	...new Set(['UTC', auth.user.preferences.timezone, ...Intl.supportedValuesOf('timeZone')].filter(Boolean)),
+]
 const timezoneQuery = ref('')
 
 // "new york" finds America/New_York: compare without the underscores and slashes.
