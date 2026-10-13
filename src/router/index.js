@@ -82,6 +82,18 @@ export const router = createRouter({
 					name: 'home',
 					component: () => import('@/features/home/HomeScreen.vue'),
 				},
+				{
+					path: 'account',
+					component: () => import('@/layouts/SettingsLayout.vue'),
+					children: [
+						{ path: '', redirect: (to) => ({ name: 'account-preferences', params: to.params }) },
+						{
+							path: 'preferences',
+							name: 'account-preferences',
+							component: () => import('@/features/account/PreferencesScreen.vue'),
+						},
+					],
+				},
 			],
 		},
 		{
