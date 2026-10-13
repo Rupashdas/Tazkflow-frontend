@@ -21,7 +21,7 @@ body {
 /* One focus ring for the whole app, in the accent colour, visible on every
  * palette. Keyboard users need it; mouse clicks do not show it. */
 :focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
   border-radius: 4px;
 }
