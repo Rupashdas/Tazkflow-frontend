@@ -12,6 +12,22 @@ const copy = accountCopy.security
 const auth = useAuthStore()
 const emailDialogOpen = ref(false)
 
+const resending = ref(false)
+
+async function resend() {
+	resending.value = true
+	try {
+		await api.post('/api/email/verification-notification')
+		toast(copy.resent)
+	} catch (error) {
+		if (endsSession(error)) return
+		// 429 after six tries a minute: the server's own sentence says so.
+		toast(errorMessage(error, copy.resendFailed), 'error')
+	} finally {
+		resending.value = false
+	}
+}
+
 const current = ref('')
 const next = ref('')
 const confirm = ref('')
@@ -58,6 +74,20 @@ async function changePassword() {
 					<p class="mt-1 truncate text-secondary">{{ auth.user.email }}</p>
 				</div>
 				<Button variant="secondary" @click="emailDialogOpen = true">{{ copy.change }}</Button>
+			</div>
+
+			<div
+				v-if="auth.user.pending_email"
+				class="mt-5 rounded-control bg-warning-soft px-4 py-3.5 text-[14px] text-warning-text"
+				role="status"
+			>
+				<p class="font-semibold">{{ copy.pendingTitle.replace('{email}', auth.user.pending_email) }}</p>
+				<p class="mt-1">{{ copy.pendingBody.replace('{email}', auth.user.email) }}</p>
+				<div class="mt-3 flex flex-wrap gap-5">
+					<button type="button" class="min-h-10 font-semibold underline-offset-2 hover:underline disabled:opacity-60" :disabled="resending" @click="resend">
+						{{ copy.resend }}
+					</button>
+				</div>
 			</div>
 		</section>
 
