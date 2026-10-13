@@ -30,7 +30,7 @@ const groups = computed(() => [
 						<RouterLink
 							:to="item.to"
 							class="flex h-10 items-center rounded-nav px-3 text-[15px] text-secondary hover:bg-surface"
-							active-class="bg-surface font-semibold text-text shadow-[inset_3px_0_0_var(--accent-rail)]"
+							active-class="rounded-l-none bg-surface font-semibold text-text shadow-[inset_3px_0_0_var(--accent-rail)]"
 						>
 							{{ item.label }}
 						</RouterLink>

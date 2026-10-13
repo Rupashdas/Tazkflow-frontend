@@ -37,7 +37,7 @@ async function signOut() {
 				<RouterLink
 					:to="`/${workspace.slug}`"
 					class="flex h-12 items-center gap-3 rounded-nav px-3.5 text-[15px] text-secondary hover:bg-surface-subtle"
-					active-class="bg-surface-subtle font-semibold text-text shadow-[inset_3px_0_0_var(--accent-rail)]"
+					active-class="rounded-l-none bg-surface-subtle font-semibold text-text shadow-[inset_3px_0_0_var(--accent-rail)]"
 				>
 					<Home class="size-5 opacity-70" aria-hidden="true" />
 					{{ copy.home }}
