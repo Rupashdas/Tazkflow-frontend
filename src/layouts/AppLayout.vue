@@ -12,6 +12,7 @@ import { useAuthStore } from '@/stores/useAuthStore'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
 import { workspaceCopy } from '@/features/workspaces/copy'
 import WorkspaceSwitcher from '@/features/workspaces/WorkspaceSwitcher.vue'
+import Toaster from '@/ui/Toaster.vue'
 
 const copy = workspaceCopy.shell
 const auth = useAuthStore()
@@ -78,5 +79,7 @@ async function signOut() {
 		<main class="min-w-0 flex-1">
 			<RouterView />
 		</main>
+
+		<Toaster />
 	</div>
 </template>

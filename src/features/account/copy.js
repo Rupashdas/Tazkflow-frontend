@@ -1,4 +1,15 @@
 export const accountCopy = {
+	profile: {
+		overline: 'My account',
+		title: 'Profile',
+		subtitle: 'How you appear to people in every workspace you belong to.',
+		name: 'Full name',
+		jobTitle: 'Title',
+		jobTitleHint: 'Optional. For example: Designer, Project lead.',
+		save: 'Save changes',
+		saved: 'Profile saved.',
+		failed: 'We could not save your profile. Please try again.',
+	},
 	preferences: {
 		overline: 'My account',
 		title: 'Preferences',

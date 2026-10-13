@@ -11,7 +11,10 @@ const workspace = useWorkspaceStore()
 const groups = computed(() => [
 	{
 		label: copy.myAccount,
-		items: [{ to: `/${workspace.slug}/account/preferences`, label: copy.preferences }],
+		items: [
+			{ to: `/${workspace.slug}/account/profile`, label: copy.profile },
+			{ to: `/${workspace.slug}/account/preferences`, label: copy.preferences },
+		],
 	},
 ])
 </script>

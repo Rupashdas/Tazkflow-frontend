@@ -86,7 +86,12 @@ export const router = createRouter({
 					path: 'account',
 					component: () => import('@/layouts/SettingsLayout.vue'),
 					children: [
-						{ path: '', redirect: (to) => ({ name: 'account-preferences', params: to.params }) },
+						{ path: '', redirect: (to) => ({ name: 'account-profile', params: to.params }) },
+						{
+							path: 'profile',
+							name: 'account-profile',
+							component: () => import('@/features/account/ProfileScreen.vue'),
+						},
 						{
 							path: 'preferences',
 							name: 'account-preferences',
