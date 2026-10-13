@@ -12,6 +12,7 @@ import { useAuthStore } from '@/stores/useAuthStore'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
 import { workspaceCopy } from '@/features/workspaces/copy'
 import WorkspaceSwitcher from '@/features/workspaces/WorkspaceSwitcher.vue'
+import { useCan } from '@/features/workspaces/useCan'
 import Avatar from '@/ui/Avatar.vue'
 import Toaster from '@/ui/Toaster.vue'
 
@@ -19,6 +20,7 @@ const copy = workspaceCopy.shell
 const auth = useAuthStore()
 const workspace = useWorkspaceStore()
 const router = useRouter()
+const { can } = useCan()
 
 async function signOut() {
 	await auth.logout()
@@ -67,6 +69,7 @@ async function signOut() {
 							{{ copy.accountSettings }}
 						</DropdownMenuItem>
 						<DropdownMenuItem
+							v-if="can('members.view')"
 							class="cursor-pointer rounded-nav px-3 py-2.5 text-[15px] text-text outline-none data-highlighted:bg-surface-subtle"
 							@select="router.push(`/${workspace.slug}/settings`)"
 						>
