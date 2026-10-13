@@ -117,7 +117,7 @@ const zoneLabel = (zone) => zone?.replaceAll('_', ' ') ?? ''
 						v-for="value in appearances"
 						:key="value"
 						:value="value"
-						class="flex h-11 items-center gap-2 rounded-control border-2 border-border px-4 text-[15px] text-secondary data-[state=checked]:border-text data-[state=checked]:font-semibold data-[state=checked]:text-text"
+						class="flex h-11 items-center gap-2 rounded-control border-2 border-border px-4 text-[15px] text-secondary data-[state=checked]:border-accent data-[state=checked]:font-semibold data-[state=checked]:text-text"
 					>
 						<component :is="appearanceIcons[value]" class="size-[18px]" aria-hidden="true" />
 						{{ copy.appearances[value] }}
@@ -171,14 +171,14 @@ const zoneLabel = (zone) => zone?.replaceAll('_', ' ') ?? ''
 					@update:model-value="(zone) => zone && save({ timezone: zone })"
 				>
 					<ComboboxAnchor
-						class="flex h-[50px] items-center rounded-control border border-border-strong bg-surface px-4"
+						class="flex h-[50px] items-center rounded-control border-2 border-border-strong bg-surface px-4 focus-within:border-accent"
 					>
 						<ComboboxInput
 							v-model="timezoneQuery"
 							:display-value="zoneLabel"
 							:placeholder="copy.timezoneSearch"
 							aria-labelledby="timezone-label"
-							class="min-w-0 flex-1 bg-transparent text-[16px] text-text outline-none placeholder:text-muted"
+							class="min-w-0 flex-1 bg-transparent text-[16px] text-text !outline-none placeholder:text-muted"
 						/>
 						<ComboboxTrigger :aria-label="copy.timezoneSearch">
 							<ChevronDown class="size-4 text-icon-muted" aria-hidden="true" />

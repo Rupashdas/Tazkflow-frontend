@@ -36,9 +36,7 @@ const groups = computed(() => [
 		</nav>
 
 		<div class="min-w-0 flex-1 p-10 max-md:p-5">
-			<div class="max-w-[720px]">
-				<RouterView />
-			</div>
+			<RouterView />
 		</div>
 	</div>
 </template>
