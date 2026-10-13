@@ -36,6 +36,22 @@ async function resend() {
 	}
 }
 
+const cancelling = ref(false)
+
+async function cancelChange() {
+	cancelling.value = true
+	try {
+		const { data } = await api.delete('/api/user/pending-email')
+		auth.setUser(data.data)
+		toast(fill(copy.cancelled, { email: data.data.email }))
+	} catch (error) {
+		if (endsSession(error)) return
+		toast(errorMessage(error, copy.cancelFailed), 'error')
+	} finally {
+		cancelling.value = false
+	}
+}
+
 const current = ref('')
 const next = ref('')
 const confirm = ref('')
@@ -94,7 +110,11 @@ async function changePassword() {
 				<div class="mt-3 flex flex-wrap gap-5">
 					<button type="button" class="min-h-10 font-semibold underline-offset-2 hover:underline disabled:opacity-60" :disabled="resending" @click="resend">
 						{{ copy.resend }}
-					</button>				</div>
+					</button>
+					<button type="button" class="min-h-10 font-semibold underline-offset-2 hover:underline disabled:opacity-60" :disabled="cancelling" @click="cancelChange">
+						{{ copy.cancelChange }}
+					</button>
+				</div>
 			</div>
 		</section>
 
