@@ -4,9 +4,13 @@ import Button from '@/ui/Button.vue'
 import TextField from '@/ui/TextField.vue'
 import { api, endsSession, errorMessage, fieldErrors } from '@/lib/api'
 import { toast } from '@/lib/toast'
+import { useAuthStore } from '@/stores/useAuthStore'
+import ChangeEmailDialog from './ChangeEmailDialog.vue'
 import { accountCopy } from './copy'
 
 const copy = accountCopy.security
+const auth = useAuthStore()
+const emailDialogOpen = ref(false)
 
 const current = ref('')
 const next = ref('')
@@ -47,7 +51,19 @@ async function changePassword() {
 		<h1 class="mt-2.5 text-[28px] font-bold tracking-[-0.02em] text-text">{{ copy.title }}</h1>
 		<p class="mt-2 text-secondary">{{ copy.subtitle }}</p>
 
-		<form class="mt-8 rounded-card border border-border bg-surface p-7 shadow-card max-md:p-5" @submit.prevent="changePassword">
+		<section class="mt-8 rounded-card border border-border bg-surface p-7 shadow-card max-md:p-5">
+			<div class="flex items-center justify-between gap-4">
+				<div class="min-w-0">
+					<h2 class="text-[20px] font-semibold text-text">{{ copy.emailTitle }}</h2>
+					<p class="mt-1 truncate text-secondary">{{ auth.user.email }}</p>
+				</div>
+				<Button variant="secondary" @click="emailDialogOpen = true">{{ copy.change }}</Button>
+			</div>
+		</section>
+
+		<ChangeEmailDialog v-model:open="emailDialogOpen" />
+
+		<form class="mt-6 rounded-card border border-border bg-surface p-7 shadow-card max-md:p-5" @submit.prevent="changePassword">
 			<h2 class="text-[20px] font-semibold text-text">{{ copy.passwordTitle }}</h2>
 
 			<p v-if="formError" class="mt-5 rounded-control bg-danger-soft px-4 py-3 text-[14px] text-danger-text" role="alert">

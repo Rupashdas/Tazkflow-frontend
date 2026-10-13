@@ -17,6 +17,7 @@
   --color-border-strong: var(--border-strong);
   --color-divider: var(--divider);
   --color-row-hover: var(--row-hover);
+  --color-overlay: var(--overlay);
 
   --color-text: var(--text);
   --color-secondary: var(--text-secondary);
@@ -63,6 +64,7 @@
   --border-strong: #e3e6ea;
   --divider: #f4f5f7;
   --row-hover: #fbfcfe;
+  --overlay: rgb(16 24 40 / 0.4);
 
   --text: #111827;
   --text-secondary: #4b5563;
@@ -89,6 +91,7 @@
   --border-strong: #2b3039;
   --divider: #23272e;
   --row-hover: #1f232a;
+  --overlay: rgb(0 0 0 / 0.55);
 
   --text: #dfe3e9;
   --text-secondary: #aeb5c0;
