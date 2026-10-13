@@ -93,6 +93,11 @@ export const router = createRouter({
 							component: () => import('@/features/account/ProfileScreen.vue'),
 						},
 						{
+							path: 'security',
+							name: 'account-security',
+							component: () => import('@/features/account/SecurityScreen.vue'),
+						},
+						{
 							path: 'preferences',
 							name: 'account-preferences',
 							component: () => import('@/features/account/PreferencesScreen.vue'),

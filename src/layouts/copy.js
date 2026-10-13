@@ -3,6 +3,7 @@ export const layoutCopy = {
 		navLabel: 'Settings',
 		myAccount: 'My account',
 		profile: 'Profile',
+		security: 'Email & password',
 		preferences: 'Preferences',
 	},
 }

@@ -13,6 +13,7 @@ const groups = computed(() => [
 		label: copy.myAccount,
 		items: [
 			{ to: `/${workspace.slug}/account/profile`, label: copy.profile },
+			{ to: `/${workspace.slug}/account/security`, label: copy.security },
 			{ to: `/${workspace.slug}/account/preferences`, label: copy.preferences },
 		],
 	},
