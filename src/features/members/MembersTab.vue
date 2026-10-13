@@ -38,14 +38,38 @@ watch(search, (value) => {
 	}, 250)
 })
 
-// A button press needs no pause: empty both at once so the list is back now.
-function clearSearch() {
+// A role id or 'none', and 'active' or 'deactivated'. 'all' leaves the filter out.
+const roleFilter = ref('all')
+const statusFilter = ref('all')
+const filtered = computed(() => roleFilter.value !== 'all' || statusFilter.value !== 'all')
+
+// A button press needs no pause: empty everything at once so the list is back now.
+function clearFilters() {
 	clearTimeout(timer)
 	search.value = ''
 	searched.value = ''
+	roleFilter.value = 'all'
+	statusFilter.value = 'all'
 }
 
-const { data, isPending, isError, refetch, hasNextPage, fetchNextPage, isFetchingNextPage } = useMembers(searched)
+// The roles come from roles.view; without it there is nothing to pick from.
+const roleFilterOptions = computed(() => [
+	{ value: 'all', label: copy.allRoles },
+	...(roles.value ?? []).map((role) => ({ value: String(role.id), label: role.label })),
+	{ value: 'none', label: copy.noRole },
+])
+
+const statusFilterOptions = [
+	{ value: 'all', label: copy.allStatuses },
+	{ value: 'active', label: copy.active },
+	{ value: 'deactivated', label: copy.deactivated },
+]
+
+const { data, isPending, isError, refetch, hasNextPage, fetchNextPage, isFetchingNextPage } = useMembers({
+	search: searched,
+	role: roleFilter,
+	status: statusFilter,
+})
 
 const members = computed(() => data.value?.pages.flatMap((page) => page.data) ?? [])
 
@@ -168,16 +192,33 @@ const { mutate: remove, isPending: removingNow } = useMutation({
 
 <template>
 	<div>
-		<label class="relative mb-4 block max-w-[360px] max-md:max-w-none">
-			<span class="sr-only">{{ copy.search }}</span>
-			<Search class="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-icon-muted" aria-hidden="true" />
-			<input
-				v-model="search"
-				type="search"
-				:placeholder="copy.search"
-				class="h-[50px] w-full rounded-control border border-border-strong bg-surface pl-11 pr-4 text-[16px] text-text placeholder:text-muted"
+		<div class="mb-4 flex flex-wrap gap-3 max-md:flex-col">
+			<label class="relative block w-[360px] max-md:w-full">
+				<span class="sr-only">{{ copy.search }}</span>
+				<Search class="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-icon-muted" aria-hidden="true" />
+				<input
+					v-model="search"
+					type="search"
+					:placeholder="copy.search"
+					class="h-[50px] w-full rounded-control border border-border-strong bg-surface pl-11 pr-4 text-[16px] text-text placeholder:text-muted"
+				/>
+			</label>
+
+			<SelectField
+				v-if="roles"
+				v-model="roleFilter"
+				:options="roleFilterOptions"
+				:aria-label="copy.roleFilter"
+				class="w-[184px] max-md:w-full"
 			/>
-		</label>
+
+			<SelectField
+				v-model="statusFilter"
+				:options="statusFilterOptions"
+				:aria-label="copy.statusFilter"
+				class="w-[184px] max-md:w-full"
+			/>
+		</div>
 
 		<div v-if="isPending" class="space-y-2">
 			<div v-for="n in 4" :key="n" class="h-[72px] animate-pulse rounded-card bg-surface-subtle" />
@@ -196,10 +237,12 @@ const { mutate: remove, isPending: removingNow } = useMutation({
 				<SearchX class="size-6 text-accent-soft-text" aria-hidden="true" />
 			</div>
 			<h2 class="mt-5 max-w-[520px] break-words text-[20px] font-semibold text-text">
-				{{ fill(copy.noMatchTitle, { search: searched }) }}
+				{{ searched ? fill(copy.noMatchTitle, { search: searched }) : copy.noFilterMatchTitle }}
 			</h2>
-			<p class="mt-2 max-w-[420px] text-secondary">{{ copy.noMatchBody }}</p>
-			<Button variant="secondary" class="mt-6" @click="clearSearch">{{ copy.clearSearch }}</Button>
+			<p class="mt-2 max-w-[420px] text-secondary">{{ searched && !filtered ? copy.noMatchBody : copy.noFilterMatchBody }}</p>
+			<Button variant="secondary" class="mt-6" @click="clearFilters">
+				{{ filtered ? copy.clearFilters : copy.clearSearch }}
+			</Button>
 		</div>
 
 		<ul v-else class="divide-y divide-divider rounded-card border border-border bg-surface shadow-card">
