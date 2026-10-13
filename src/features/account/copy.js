@@ -15,6 +15,9 @@ export const accountCopy = {
 		photoTooBig: 'That file is larger than 5 MB. Choose a smaller one.',
 		photoSaved: 'Photo updated.',
 		photoFailed: 'We could not upload that photo. Please try another one.',
+		removePhoto: 'Remove',
+		photoRemoved: 'Photo removed.',
+		removeFailed: 'We could not remove the photo. Please try again.',
 	},
 	preferences: {
 		overline: 'My account',

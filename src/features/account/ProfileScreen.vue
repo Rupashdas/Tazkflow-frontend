@@ -50,6 +50,23 @@ async function upload(event) {
 	}
 }
 
+const removing = ref(false)
+
+async function removePhoto() {
+	photoError.value = ''
+	removing.value = true
+	try {
+		const { data } = await api.delete('/api/user/avatar')
+		auth.setUser(data.data)
+		toast(copy.photoRemoved)
+	} catch (error) {
+		if (endsSession(error)) return
+		photoError.value = errorMessage(error, copy.removeFailed)
+	} finally {
+		removing.value = false
+	}
+}
+
 async function submit() {
 	saving.value = true
 	errors.value = {}
@@ -91,6 +108,9 @@ async function submit() {
 			<div class="flex gap-3">
 				<input ref="fileInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" @change="upload" />
 				<Button variant="secondary" :loading="uploading" @click="fileInput.click()">{{ copy.upload }}</Button>
+				<Button v-if="auth.user.avatar" variant="ghost" :loading="removing" @click="removePhoto">
+					{{ copy.removePhoto }}
+				</Button>
 			</div>
 		</section>
 
