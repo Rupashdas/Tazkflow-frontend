@@ -29,8 +29,8 @@ const groups = computed(() => [
 					<li v-for="item in group.items" :key="item.to">
 						<RouterLink
 							:to="item.to"
-							class="flex h-10 items-center rounded-nav px-3 text-[15px] text-secondary hover:bg-surface-subtle"
-							active-class="bg-surface-subtle font-semibold text-text"
+							class="flex h-10 items-center rounded-nav px-3 text-[15px] text-secondary hover:bg-surface"
+							active-class="bg-surface font-semibold text-text shadow-[inset_3px_0_0_var(--accent-rail)]"
 						>
 							{{ item.label }}
 						</RouterLink>
