@@ -20,6 +20,7 @@ export const membersCopy = {
 		noFilterMatchTitle: 'No one matches these filters',
 		noFilterMatchBody: 'Try another role or status, or clear the filters to see everyone.',
 		clearFilters: 'Clear filters',
+		resetFilters: 'Reset filters',
 		roleFilter: 'Filter by role',
 		allRoles: 'All roles',
 		statusFilter: 'Filter by status',

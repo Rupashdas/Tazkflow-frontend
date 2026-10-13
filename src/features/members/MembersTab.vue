@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import { MoreHorizontal, Search, SearchX } from 'lucide-vue-next'
+import { MoreHorizontal, RotateCcw, Search, SearchX } from 'lucide-vue-next'
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuPortal, DropdownMenuRoot, DropdownMenuTrigger } from 'reka-ui'
 import Avatar from '@/ui/Avatar.vue'
 import Button from '@/ui/Button.vue'
@@ -218,6 +218,12 @@ const { mutate: remove, isPending: removingNow } = useMutation({
 				:aria-label="copy.statusFilter"
 				class="w-[184px] max-md:w-full"
 			/>
+
+			<!-- Only when something is narrowing the list; pushed to the row's right end. -->
+			<Button v-if="search || filtered" variant="ghost" class="ml-auto max-md:ml-0" @click="clearFilters">
+				<RotateCcw class="size-4" aria-hidden="true" />
+				{{ copy.resetFilters }}
+			</Button>
 		</div>
 
 		<div v-if="isPending" class="space-y-2">
