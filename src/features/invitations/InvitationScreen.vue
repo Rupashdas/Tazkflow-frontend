@@ -7,6 +7,7 @@ import TextField from '@/ui/TextField.vue'
 import { api, ensureCsrfCookie, fieldErrors, errorMessage } from '@/lib/api'
 import { queryClient } from '@/lib/queryClient'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { fill } from '@/lib/fill'
 import { invitationCopy as copy } from './copy'
 
 const route = useRoute()
@@ -39,11 +40,12 @@ const mode = computed(() => {
 	return auth.user.email_verified ? 'join' : 'confirmFirst'
 })
 
-const title = computed(() => copy.title.replace('{workspace}', invitation.value?.workspace.name ?? ''))
+const title = computed(() => fill(copy.title, { workspace: invitation.value?.workspace.name }))
 const invitedBy = computed(() =>
-	copy.invitedBy
-		.replace('{name}', invitation.value?.invited_by ?? '')
-		.replace('{role}', invitation.value?.role ?? copy.defaultRole),
+	fill(copy.invitedBy, {
+		name: invitation.value?.invited_by,
+		role: invitation.value?.role ?? copy.defaultRole,
+	}),
 )
 
 async function load() {
@@ -172,7 +174,7 @@ async function signOut() {
 			<!-- Signed in with the invited address, not confirmed yet. ?next brings them back here. -->
 			<div v-else-if="mode === 'confirmFirst'" class="mt-8">
 				<h2 class="text-[20px] font-semibold text-text">{{ copy.confirmFirstTitle }}</h2>
-				<p class="mt-2 text-secondary">{{ copy.confirmFirstBody.replace('{email}', auth.user.email) }}</p>
+				<p class="mt-2 text-secondary">{{ fill(copy.confirmFirstBody, { email: auth.user.email }) }}</p>
 				<div class="mt-5">
 					<Button @click="router.push({ path: '/verify-email', query: { next: route.fullPath } })">
 						{{ copy.confirmFirst }}
@@ -183,7 +185,7 @@ async function signOut() {
 			<!-- Has an account but is not signed in. Login's ?next brings them back. -->
 			<div v-else-if="mode === 'signIn'" class="mt-8">
 				<h2 class="text-[20px] font-semibold text-text">{{ copy.haveAccountTitle }}</h2>
-				<p class="mt-2 text-secondary">{{ copy.haveAccountBody.replace('{email}', invitation.email) }}</p>
+				<p class="mt-2 text-secondary">{{ fill(copy.haveAccountBody, { email: invitation.email }) }}</p>
 				<div class="mt-5">
 					<Button @click="router.push({ path: '/login', query: { next: route.fullPath } })">{{ copy.signIn }}</Button>
 				</div>
@@ -193,7 +195,7 @@ async function signOut() {
 			<div v-else class="mt-8">
 				<h2 class="text-[20px] font-semibold text-text">{{ copy.wrongAccountTitle }}</h2>
 				<p class="mt-2 text-secondary">
-					{{ copy.wrongAccountBody.replace('{email}', invitation.email).replace('{current}', auth.user?.email ?? '') }}
+					{{ fill(copy.wrongAccountBody, { email: invitation.email, current: auth.user?.email }) }}
 				</p>
 				<div class="mt-5">
 					<Button variant="secondary" @click="signOut">{{ copy.signOut }}</Button>

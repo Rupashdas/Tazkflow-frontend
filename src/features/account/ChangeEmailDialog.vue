@@ -15,6 +15,7 @@ import TextField from '@/ui/TextField.vue'
 import { api, endsSession, errorMessage, fieldErrors } from '@/lib/api'
 import { toast } from '@/lib/toast'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { fill } from '@/lib/fill'
 import { accountCopy } from './copy'
 
 const copy = accountCopy.changeEmail
@@ -41,8 +42,14 @@ async function submit() {
 	formError.value = ''
 
 	// The API would quietly accept this and change nothing, which looks like a bug.
-	if (email.value.trim().toLowerCase() === auth.user.email.toLowerCase()) {
+	const typed = email.value.trim().toLowerCase()
+	if (typed === auth.user.email.toLowerCase()) {
 		errors.value = { email: copy.sameEmail }
+		return
+	}
+	// Here too the API changes nothing and sends nothing, so "we sent a link" would be untrue.
+	if (typed === auth.user.pending_email?.toLowerCase()) {
+		errors.value = { email: copy.samePending }
 		return
 	}
 
@@ -51,7 +58,7 @@ async function submit() {
 		const { data } = await api.patch('/api/user', { email: email.value.trim(), current_password: password.value })
 		auth.setUser(data.data)
 		open.value = false
-		toast(copy.sent.replace('{email}', data.data.pending_email))
+		toast(fill(copy.sent, { email: data.data.pending_email }))
 	} catch (error) {
 		if (endsSession(error)) return
 		errors.value = fieldErrors(error)

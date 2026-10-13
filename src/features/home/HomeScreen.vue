@@ -3,12 +3,13 @@ import { computed } from 'vue'
 import { FolderPlus } from 'lucide-vue-next'
 import { useCurrentWorkspace } from '@/features/workspaces/queries'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { fill } from '@/lib/fill'
 import { homeCopy as copy } from './copy'
 
 const auth = useAuthStore()
 const { data: workspace, isPending, isError, refetch } = useCurrentWorkspace()
 
-const greeting = computed(() => copy.greeting.replace('{name}', auth.user?.name?.split(' ')[0] ?? ''))
+const greeting = computed(() => fill(copy.greeting, { name: auth.user?.name?.split(' ')[0] }))
 </script>
 
 <template>

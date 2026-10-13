@@ -6,6 +6,7 @@ import Button from '@/ui/Button.vue'
 import TextField from '@/ui/TextField.vue'
 import { api, ensureCsrfCookie, fieldErrors, errorMessage } from '@/lib/api'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { fill } from '@/lib/fill'
 import { authCopy } from './copy'
 
 const copy = authCopy.reset
@@ -23,7 +24,7 @@ const formError = ref('')
 const submitting = ref(false)
 const done = ref(false)
 
-const subtitle = computed(() => copy.subtitle.replace('{email}', email))
+const subtitle = computed(() => fill(copy.subtitle, { email }))
 
 async function submit() {
 	submitting.value = true

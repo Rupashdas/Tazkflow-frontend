@@ -5,6 +5,7 @@ import TextField from '@/ui/TextField.vue'
 import { api, endsSession, errorMessage, fieldErrors } from '@/lib/api'
 import { toast } from '@/lib/toast'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { fill } from '@/lib/fill'
 import ChangeEmailDialog from './ChangeEmailDialog.vue'
 import { accountCopy } from './copy'
 
@@ -17,11 +18,18 @@ const resending = ref(false)
 async function resend() {
 	resending.value = true
 	try {
-		await api.post('/api/email/verification-notification')
+		const { status } = await api.post('/api/email/verification-notification')
+		// 200 instead of 202: nothing was sent, because the new address was
+		// confirmed meanwhile (another tab or device). Show the account as it is now.
+		if (status === 200) {
+			await auth.fetchUser()
+			toast(copy.alreadyConfirmed)
+			return
+		}
 		toast(copy.resent)
 	} catch (error) {
 		if (endsSession(error)) return
-		// 429 after six tries a minute: the server's own sentence says so.
+		// 429 after two tries a minute or ten an hour: the server's own sentence says so.
 		toast(errorMessage(error, copy.resendFailed), 'error')
 	} finally {
 		resending.value = false
@@ -81,13 +89,12 @@ async function changePassword() {
 				class="mt-5 rounded-control bg-warning-soft px-4 py-3.5 text-[14px] text-warning-text"
 				role="status"
 			>
-				<p class="font-semibold">{{ copy.pendingTitle.replace('{email}', auth.user.pending_email) }}</p>
-				<p class="mt-1">{{ copy.pendingBody.replace('{email}', auth.user.email) }}</p>
+				<p class="font-semibold">{{ fill(copy.pendingTitle, { email: auth.user.pending_email }) }}</p>
+				<p class="mt-1">{{ fill(copy.pendingBody, { email: auth.user.email }) }}</p>
 				<div class="mt-3 flex flex-wrap gap-5">
 					<button type="button" class="min-h-10 font-semibold underline-offset-2 hover:underline disabled:opacity-60" :disabled="resending" @click="resend">
 						{{ copy.resend }}
-					</button>
-				</div>
+					</button>				</div>
 			</div>
 		</section>
 

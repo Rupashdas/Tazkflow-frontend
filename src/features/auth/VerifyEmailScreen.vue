@@ -5,6 +5,7 @@ import AuthLayout from '@/layouts/AuthLayout.vue'
 import Button from '@/ui/Button.vue'
 import { api, errorMessage } from '@/lib/api'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { fill } from '@/lib/fill'
 import { authCopy } from './copy'
 
 const copy = authCopy.verify
@@ -18,7 +19,7 @@ const checking = ref(false)
 
 // A placeholder rather than a joined sentence, so a translation can move the
 // address to wherever its grammar needs it.
-const subtitle = computed(() => copy.subtitle.replace('{email}', auth.user?.email ?? ''))
+const subtitle = computed(() => fill(copy.subtitle, { email: auth.user?.email }))
 
 async function resend() {
 	sending.value = true

@@ -17,6 +17,7 @@ import WizardLayout from '@/layouts/WizardLayout.vue'
 import Button from '@/ui/Button.vue'
 import { api, endsSession, ensureCsrfCookie, fieldErrors, errorMessage } from '@/lib/api'
 import { useRoles } from '@/features/workspaces/queries'
+import { fill } from '@/lib/fill'
 import { onboardingCopy } from './copy'
 
 const copy = onboardingCopy.invite
@@ -53,7 +54,7 @@ watch(defaultRoleId, (id) => {
 const filled = computed(() => rows.value.filter((row) => row.email.trim() !== ''))
 
 const submitLabel = computed(() =>
-	filled.value.length === 1 ? copy.submitOne : copy.submit.replace('{count}', String(filled.value.length)),
+	filled.value.length === 1 ? copy.submitOne : fill(copy.submit, { count: filled.value.length }),
 )
 
 function addRow() {
