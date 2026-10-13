@@ -17,6 +17,7 @@ import { Check, ChevronDown, Monitor, Moon, Sun } from 'lucide-vue-next'
 import { api, endsSession } from '@/lib/api'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { ACCENTS } from '@/lib/theme'
+import SegmentedControl from '@/ui/SegmentedControl.vue'
 import { accountCopy } from './copy'
 
 const copy = accountCopy.preferences
@@ -77,6 +78,9 @@ const matchingTimezones = computed(() => {
 })
 
 const zoneLabel = (zone) => zone?.replaceAll('_', ' ') ?? ''
+
+const weekStarts = ['monday', 'sunday'].map((value) => ({ value, label: copy.weekStarts[value] }))
+const timeFormats = ['12', '24'].map((value) => ({ value, label: copy.timeFormats[value] }))
 </script>
 
 <template>
@@ -210,6 +214,26 @@ const zoneLabel = (zone) => zone?.replaceAll('_', ' ') ?? ''
 						</ComboboxContent>
 					</ComboboxPortal>
 				</ComboboxRoot>
+			</div>
+
+			<div class="flex items-center justify-between gap-6 p-6 max-md:flex-col max-md:items-start">
+				<p id="week-start-label" class="text-[15px] font-semibold text-text">{{ copy.weekStart }}</p>
+				<SegmentedControl
+					:model-value="auth.user.preferences.week_start"
+					:options="weekStarts"
+					labelled-by="week-start-label"
+					@update:model-value="save({ week_start: $event })"
+				/>
+			</div>
+
+			<div class="flex items-center justify-between gap-6 p-6 max-md:flex-col max-md:items-start">
+				<p id="time-format-label" class="text-[15px] font-semibold text-text">{{ copy.timeFormat }}</p>
+				<SegmentedControl
+					:model-value="String(auth.user.preferences.time_format)"
+					:options="timeFormats"
+					labelled-by="time-format-label"
+					@update:model-value="save({ time_format: $event })"
+				/>
 			</div>
 		</div>
 	</div>

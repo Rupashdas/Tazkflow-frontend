@@ -16,5 +16,9 @@ export const accountCopy = {
 		timezoneHint: 'Due dates and times are shown in this timezone.',
 		timezoneSearch: 'Search timezones',
 		timezoneNone: 'No timezone matches that.',
+		weekStart: 'Week starts on',
+		weekStarts: { monday: 'Monday', sunday: 'Sunday' },
+		timeFormat: 'Time format',
+		timeFormats: { 12: '1:30 pm', 24: '13:30' },
 	},
 }
