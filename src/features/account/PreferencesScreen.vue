@@ -1,9 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 import { RadioGroupItem, RadioGroupRoot } from 'reka-ui'
-import { Monitor, Moon, Sun } from 'lucide-vue-next'
+import { Check, Monitor, Moon, Sun } from 'lucide-vue-next'
 import { api, endsSession } from '@/lib/api'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { ACCENTS } from '@/lib/theme'
 import { accountCopy } from './copy'
 
 const copy = accountCopy.preferences
@@ -43,6 +44,15 @@ async function save(changes) {
 
 const appearances = ['light', 'dark', 'os']
 const appearanceIcons = { light: Sun, dark: Moon, os: Monitor }
+
+// Full class names, so Tailwind finds them when it scans this file.
+const swatch = {
+	blue: 'bg-swatch-blue',
+	violet: 'bg-swatch-violet',
+	emerald: 'bg-swatch-emerald',
+	amber: 'bg-swatch-amber',
+	rose: 'bg-swatch-rose',
+}
 </script>
 
 <template>
@@ -87,6 +97,38 @@ const appearanceIcons = { light: Sun, dark: Moon, os: Monitor }
 					>
 						<component :is="appearanceIcons[value]" class="size-[18px]" aria-hidden="true" />
 						{{ copy.appearances[value] }}
+					</RadioGroupItem>
+				</RadioGroupRoot>
+			</div>
+
+			<div class="flex items-center justify-between gap-6 p-6 max-md:flex-col max-md:items-start">
+				<div>
+					<p id="accent-label" class="text-[15px] font-semibold text-text">{{ copy.accent }}</p>
+					<p class="mt-1 text-[14px] text-muted">{{ copy.accentHint }}</p>
+				</div>
+
+				<RadioGroupRoot
+					:model-value="auth.user.preferences.palette"
+					aria-labelledby="accent-label"
+					orientation="horizontal"
+					class="flex shrink-0 gap-2.5"
+					@update:model-value="save({ palette: $event })"
+				>
+					<RadioGroupItem
+						v-for="accent in ACCENTS"
+						:key="accent"
+						:value="accent"
+						:aria-label="copy.accents[accent]"
+						:title="copy.accents[accent]"
+						class="flex size-9 items-center justify-center rounded-full ring-offset-2 ring-offset-surface data-[state=checked]:ring-2 data-[state=checked]:ring-text"
+						:class="swatch[accent]"
+					>
+						<!-- A tick as well as the ring: the choice never rests on colour alone. -->
+						<Check
+							v-if="auth.user.preferences.palette === accent"
+							class="size-4 text-accent-contrast"
+							aria-hidden="true"
+						/>
 					</RadioGroupItem>
 				</RadioGroupRoot>
 			</div>

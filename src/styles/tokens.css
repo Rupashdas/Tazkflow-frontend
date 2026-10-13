@@ -30,6 +30,13 @@
   --color-accent-text: var(--accent-text);
   --color-accent-rail: var(--accent-rail);
 
+  /* Accent pickers show each palette as it is, whatever accent is active. */
+  --color-swatch-blue: #2563eb;
+  --color-swatch-violet: #6250b8;
+  --color-swatch-emerald: #1f7a5f;
+  --color-swatch-amber: #b45309;
+  --color-swatch-rose: #a8475f;
+
   --color-success-soft: var(--success-soft);
   --color-success-text: var(--success-text);
   --color-warning-soft: var(--warning-soft);

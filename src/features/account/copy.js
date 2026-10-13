@@ -9,5 +9,8 @@ export const accountCopy = {
 		appearance: 'Appearance',
 		appearanceHint: 'System follows your computer’s light or dark setting.',
 		appearances: { light: 'Light', dark: 'Dark', os: 'System' },
+		accent: 'Accent colour',
+		accentHint: 'Used for buttons, links and the selected item.',
+		accents: { blue: 'Blue', violet: 'Violet', emerald: 'Emerald', amber: 'Amber', rose: 'Rose' },
 	},
 }
