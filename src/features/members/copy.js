@@ -13,5 +13,9 @@ export const membersCopy = {
 		joined: 'Joined {date}',
 		errorTitle: 'We could not load the members',
 		retry: 'Try again',
+		search: 'Search by name or email',
+		noMatchTitle: 'No one matches “{search}”',
+		noMatchBody: 'Check the spelling, or try just part of a name or an email address.',
+		clearSearch: 'Clear search',
 	},
 }
