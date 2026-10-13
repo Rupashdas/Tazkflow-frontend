@@ -4,7 +4,7 @@ import { api } from '@/lib/api'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
 
 /** Members per request. The API allows up to 100. */
-const PAGE_SIZE = 20
+const PAGE_SIZE = 50
 
 /** The workspace's members, a page at a time, sorted by name (the API's order). */
 export function useMembers(search) {
