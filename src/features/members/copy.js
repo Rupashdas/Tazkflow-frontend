@@ -27,5 +27,13 @@ export const membersCopy = {
 		nowDeactivated: '{name} can no longer open this workspace.',
 		nowActivated: '{name} can open this workspace again.',
 		toggleFailed: 'We could not change their access. Please try again.',
+		remove: 'Remove…',
+		removeTitle: 'Remove {name}?',
+		removeBody: '{name} will lose access to {workspace} straight away. Anything they created stays. You can invite them again later.',
+		removeConfirm: 'Remove',
+		cancel: 'Cancel',
+		close: 'Close',
+		removed: '{name} was removed from the workspace.',
+		removeFailed: 'We could not remove them. Please try again.',
 	},
 }

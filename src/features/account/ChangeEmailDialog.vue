@@ -1,15 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue'
-import {
-	DialogClose,
-	DialogContent,
-	DialogDescription,
-	DialogOverlay,
-	DialogPortal,
-	DialogRoot,
-	DialogTitle,
-} from 'reka-ui'
-import { X } from 'lucide-vue-next'
+import Dialog from '@/ui/Dialog.vue'
 import Button from '@/ui/Button.vue'
 import TextField from '@/ui/TextField.vue'
 import { api, endsSession, errorMessage, fieldErrors } from '@/lib/api'
@@ -70,47 +61,28 @@ async function submit() {
 </script>
 
 <template>
-	<DialogRoot v-model:open="open">
-		<DialogPortal>
-			<DialogOverlay class="fixed inset-0 z-50 bg-overlay" />
-			<DialogContent
-				class="fixed left-1/2 top-1/2 z-50 w-[480px] max-w-[calc(100vw-32px)] -translate-x-1/2 -translate-y-1/2 rounded-card border border-border bg-surface p-7 shadow-popover max-md:p-5"
-			>
-				<DialogTitle class="pr-8 text-[20px] font-semibold text-text">{{ copy.title }}</DialogTitle>
-				<DialogDescription class="mt-2 text-secondary">{{ copy.description }}</DialogDescription>
+	<Dialog v-model:open="open" :title="copy.title" :description="copy.description" :close-label="copy.close">
+		<form class="mt-6" @submit.prevent="submit">
+			<p v-if="formError" class="mb-5 rounded-control bg-danger-soft px-4 py-3 text-[14px] text-danger-text" role="alert">
+				{{ formError }}
+			</p>
 
-				<form class="mt-6" @submit.prevent="submit">
-					<p v-if="formError" class="mb-5 rounded-control bg-danger-soft px-4 py-3 text-[14px] text-danger-text" role="alert">
-						{{ formError }}
-					</p>
+			<div class="flex flex-col gap-[22px]">
+				<TextField v-model="email" type="email" :label="copy.email" autocomplete="email" :error="errors.email" />
+				<TextField
+					v-model="password"
+					type="password"
+					:label="copy.password"
+					:hint="copy.passwordHint"
+					autocomplete="current-password"
+					:error="errors.current_password"
+				/>
+			</div>
 
-					<div class="flex flex-col gap-[22px]">
-						<TextField v-model="email" type="email" :label="copy.email" autocomplete="email" :error="errors.email" />
-						<TextField
-							v-model="password"
-							type="password"
-							:label="copy.password"
-							:hint="copy.passwordHint"
-							autocomplete="current-password"
-							:error="errors.current_password"
-						/>
-					</div>
-
-					<div class="mt-7 flex justify-end gap-3">
-						<DialogClose as-child>
-							<Button variant="secondary">{{ copy.cancel }}</Button>
-						</DialogClose>
-						<Button type="submit" :loading="saving">{{ copy.submit }}</Button>
-					</div>
-				</form>
-
-				<DialogClose
-					:aria-label="copy.close"
-					class="absolute right-4 top-4 flex size-10 items-center justify-center rounded-control text-icon-muted hover:text-text"
-				>
-					<X class="size-5" aria-hidden="true" />
-				</DialogClose>
-			</DialogContent>
-		</DialogPortal>
-	</DialogRoot>
+			<div class="mt-7 flex justify-end gap-3">
+				<Button variant="secondary" @click="open = false">{{ copy.cancel }}</Button>
+				<Button type="submit" :loading="saving">{{ copy.submit }}</Button>
+			</div>
+		</form>
+	</Dialog>
 </template>

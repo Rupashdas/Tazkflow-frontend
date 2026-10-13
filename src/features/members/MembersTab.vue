@@ -5,6 +5,7 @@ import { MoreHorizontal, Search, SearchX } from 'lucide-vue-next'
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuPortal, DropdownMenuRoot, DropdownMenuTrigger } from 'reka-ui'
 import Avatar from '@/ui/Avatar.vue'
 import Button from '@/ui/Button.vue'
+import Dialog from '@/ui/Dialog.vue'
 import SelectField from '@/ui/SelectField.vue'
 import { api, endsSession, errorMessage } from '@/lib/api'
 import { fill } from '@/lib/fill'
@@ -13,6 +14,7 @@ import { toast } from '@/lib/toast'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
 import { useCan } from '@/features/workspaces/useCan'
+import { useCurrentWorkspace } from '@/features/workspaces/queries'
 import { useRoles } from '@/features/roles/queries'
 import { useMembers } from './queries'
 import { membersCopy } from './copy'
@@ -118,6 +120,38 @@ const { mutate: toggleActive } = useMutation({
 	},
 	onSettled: () => queryClient.invalidateQueries({ queryKey: membersKey() }),
 })
+
+const { data: currentWorkspace } = useCurrentWorkspace()
+const removing = ref(null) // the member the dialog asks about
+const removeError = ref('')
+
+const removeOpen = computed({
+	get: () => removing.value !== null,
+	set: (open) => {
+		if (!open) removing.value = null
+	},
+})
+
+function askRemove(member) {
+	removeError.value = ''
+	removing.value = member
+}
+
+const { mutate: remove, isPending: removingNow } = useMutation({
+	mutationFn: (member) => api.delete(`/api/members/${member.id}`),
+	onSuccess: (_, member) => {
+		toast(fill(copy.removed, { name: member.name }))
+		removing.value = null
+	},
+	onError: (error) => {
+		// Shown in the dialog, which is still open, next to the button they pressed.
+		if (!endsSession(error)) removeError.value = errorMessage(error, copy.removeFailed)
+	},
+	onSettled: () => {
+		queryClient.invalidateQueries({ queryKey: membersKey() })
+		queryClient.invalidateQueries({ queryKey: ['workspace', workspace.slug, 'roles'] })
+	},
+})
 </script>
 
 <template>
@@ -219,6 +253,12 @@ const { mutate: toggleActive } = useMutation({
 								>
 									{{ member.is_active ? copy.deactivate : copy.activate }}
 								</DropdownMenuItem>
+								<DropdownMenuItem
+									class="cursor-pointer rounded-nav px-3 py-2.5 text-[15px] text-danger-text outline-none data-highlighted:bg-danger-soft"
+									@select="askRemove(member)"
+								>
+									{{ copy.remove }}
+								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenuPortal>
 					</DropdownMenuRoot>
@@ -229,5 +269,18 @@ const { mutate: toggleActive } = useMutation({
 		<div v-if="!isPending && !isError && hasNextPage" class="mt-4 flex justify-center">
 			<Button variant="secondary" :loading="isFetchingNextPage" @click="fetchNextPage()">{{ copy.loadMore }}</Button>
 		</div>
+
+		<Dialog v-model:open="removeOpen" :title="fill(copy.removeTitle, { name: removing?.name ?? '' })" :close-label="copy.close">
+			<p class="mt-2 text-secondary">
+				{{ fill(copy.removeBody, { name: removing?.name ?? '', workspace: currentWorkspace?.name ?? '' }) }}
+			</p>
+			<p v-if="removeError" class="mt-5 rounded-control bg-danger-soft px-4 py-3 text-[14px] text-danger-text" role="alert">
+				{{ removeError }}
+			</p>
+			<div class="mt-7 flex justify-end gap-3">
+				<Button variant="secondary" @click="removeOpen = false">{{ copy.cancel }}</Button>
+				<Button variant="danger" :loading="removingNow" @click="remove(removing)">{{ copy.removeConfirm }}</Button>
+			</div>
+		</Dialog>
 	</div>
 </template>

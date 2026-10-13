@@ -1,7 +1,7 @@
 <script setup>
 /** The app's only button. Height, radius and weight come from the tokens. */
 defineProps({
-	variant: { type: String, default: 'primary' }, // 'primary' | 'secondary' | 'ghost'
+	variant: { type: String, default: 'primary' }, // 'primary' | 'secondary' | 'ghost' | 'danger'
 	loading: { type: Boolean, default: false },
 	disabled: { type: Boolean, default: false },
 	type: { type: String, default: 'button' }, // 'button' | 'submit'
@@ -21,6 +21,7 @@ defineProps({
 				? 'border border-border-strong bg-surface font-medium text-text hover:bg-surface-subtle'
 				: '',
 			variant === 'ghost' ? 'font-medium text-secondary hover:text-text' : '',
+			variant === 'danger' ? 'bg-danger text-accent-contrast hover:brightness-110' : '',
 		]"
 	>
 		<span
