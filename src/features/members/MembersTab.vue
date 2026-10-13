@@ -31,7 +31,7 @@ function clearSearch() {
 	searched.value = ''
 }
 
-const { data, isPending, isError, refetch } = useMembers(searched)
+const { data, isPending, isError, refetch, hasNextPage, fetchNextPage, isFetchingNextPage } = useMembers(searched)
 
 const members = computed(() => data.value?.pages.flatMap((page) => page.data) ?? [])
 
@@ -107,5 +107,9 @@ const joined = (member) => copy.joined.replace('{date}', formatDate(member.joine
 				<span class="w-[150px] shrink-0 text-[14px] text-muted">{{ joined(member) }}</span>
 			</li>
 		</ul>
+
+		<div v-if="!isPending && !isError && hasNextPage" class="mt-4 flex justify-center">
+			<Button variant="secondary" :loading="isFetchingNextPage" @click="fetchNextPage()">{{ copy.loadMore }}</Button>
+		</div>
 	</div>
 </template>

@@ -17,5 +17,6 @@ export const membersCopy = {
 		noMatchTitle: 'No one matches “{search}”',
 		noMatchBody: 'Check the spelling, or try just part of a name or an email address.',
 		clearSearch: 'Clear search',
+		loadMore: 'Load more',
 	},
 }

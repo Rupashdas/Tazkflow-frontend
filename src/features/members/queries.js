@@ -3,6 +3,9 @@ import { keepPreviousData, useInfiniteQuery } from '@tanstack/vue-query'
 import { api } from '@/lib/api'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
 
+/** Members per request. The API allows up to 100. */
+const PAGE_SIZE = 20
+
 /** The workspace's members, a page at a time, sorted by name (the API's order). */
 export function useMembers(search) {
 	const workspace = useWorkspaceStore()
@@ -17,7 +20,7 @@ export function useMembers(search) {
 		initialPageParam: 1,
 		queryFn: async ({ pageParam }) => {
 			const { data } = await api.get('/api/members', {
-				params: { page: pageParam, search: unref(search) || undefined },
+				params: { page: pageParam, per_page: PAGE_SIZE, search: unref(search) || undefined },
 			})
 			return data
 		},
